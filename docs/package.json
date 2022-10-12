@@ -1,0 +1,56 @@
+{
+  "name": "lathe",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@observablehq/plot": "^0.5.2",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^28.1.7",
+    "@types/node": "^18.7.6",
+    "@types/react": "^18.0.17",
+    "@types/react-dom": "^18.0.6",
+    "@use-gesture/react": "^10.2.20",
+    "classnames": "^2.3.2",
+    "immer": "^9.0.15",
+    "lodash": "^4.17.21",
+    "lodash-move": "^1.1.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-inlinesvg": "^3.0.1",
+    "react-scripts": "5.0.1",
+    "react-spring": "^9.5.5",
+    "react-spring-flip": "^2.1.0",
+    "react-use-measure": "^2.1.1",
+    "sass": "^1.54.4",
+    "typescript": "^4.7.4",
+    "usehooks-ts": "^2.7.2",
+    "uuid": "^9.0.0",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+<svg width="9" height="9" viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+<style>
+  .o {
+    stroke-dasharray: 9.35 0;
+    transition: stroke-dasharray 0.4s ease-out;
+  }
+  .checked .o {
+    stroke-dasharray: 7.925 3;
+  }
+  .i {
+    opacity: 0;
+    stroke-dasharray: 0 10;
+    transition: opacity 0.2s ease-out, stroke-dasharray 0.2s ease-out;
+  }
+  .checked .i {
+    opacity: 1;
+    stroke-dasharray: 2.5 10;
+    transition: opacity 0.2s ease-out, stroke-dasharray 0.3s ease-out 0.1s;
+  }
+</style>
+<path class="i" d="M4.5 1.5V4" stroke="currentColor" stroke-linecap="round"/>
+<circle class="o" cx="4.5" cy="4.5" r="2" stroke="currentColor" stroke-linecap="round" />
+</svg>

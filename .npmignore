@@ -1,0 +1,7 @@
+docs/
+.github/
+src/
+.babelrc
+.prettierrc
+rollup.config.js
+tsconfig.json
