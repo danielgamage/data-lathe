@@ -1,6 +1,6 @@
 import { CompositeGraph } from "./CompositeGraph"
 import { FunctionReference } from "./FunctionReference"
-import { functions } from "./functionsData.js"
+import { functions } from "./functions.js"
 
 function App() {
   return (

@@ -5,12 +5,12 @@ import {
   mirrorAcrossY,
   mirrorAcrossOrigin,
   inflectionThroughPoint,
-} from "./functions.ts"
+} from "data-lathe"
 import { useDrag } from "@use-gesture/react"
-import dataLathe, { clamp } from "./functions.ts"
+import dataLathe, { clamp } from "data-lathe"
 import { IconToggle } from "./IconToggle"
 import { Range } from "./Range"
-import { functions } from "./functionsData.js"
+import { functions } from "./functions.js"
 import produce from "immer"
 import { useOnClickOutside } from "usehooks-ts"
 import { DraggableList } from "./DraggableList.tsx"

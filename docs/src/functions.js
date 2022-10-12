@@ -15,7 +15,7 @@ import {
   linearStep,
   polyline,
   doubleExponentialSeat
-} from "./functions.ts";
+} from "data-lathe";
 
 export const functions = [
   {
