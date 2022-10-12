@@ -2,7 +2,6 @@
   "name": "data-lathe",
   "version": "0.1.0",
   "description": "A utility library for transforming and reshaping normalized data",
-  "private": true,
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
