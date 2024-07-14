@@ -1,5 +1,5 @@
 /**
- * Helper to prevent x➗0 (example)
+ * Helper to prevent x÷0 (example)
  */
 const epsilon = Number.EPSILON
 
