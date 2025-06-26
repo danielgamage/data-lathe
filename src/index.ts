@@ -93,7 +93,8 @@ export const quadraticBezier = (input: number, x: number, y: number) => {
   // adapted from BEZMATH.PS (1993)
   // by Don Lancaster, SYNERGETICS Inc.
   // http://www.tinaja.com/text/bezmath.html
-
+  
+  if (x === 0.5) { return input }
   let a = { x, y }
   a.x = clamp(a.x, 0.0, 1.0)
   a.y = clamp(a.y, 0.0, 1.0)
