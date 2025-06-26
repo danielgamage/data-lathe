@@ -1,5 +1,5 @@
 /**
- * Helper to prevent x➗0 (example)
+ * Helper to prevent x÷0 (example)
  */
 const epsilon = Number.EPSILON;
 /**
@@ -65,7 +65,7 @@ const ease = (input,
  */
 order = 2) => {
     const positiveBias = order >= 0;
-    order = (Math.abs(order) + 1);
+    order = Math.abs(order) + 1;
     input = positiveBias ? 1 - input : input;
     const offset = positiveBias ? 1 : 0;
     return offset - (positiveBias ? 1 : -1) * Math.pow(input, order);
@@ -77,6 +77,9 @@ const quadraticBezier = (input, x, y) => {
     // adapted from BEZMATH.PS (1993)
     // by Don Lancaster, SYNERGETICS Inc.
     // http://www.tinaja.com/text/bezmath.html
+    if (x === 0.5) {
+        return input;
+    }
     let a = { x, y };
     a.x = clamp(a.x, 0.0, 1.0);
     a.y = clamp(a.y, 0.0, 1.0);
@@ -130,6 +133,57 @@ const doubleExponentialSeat = (input, a) => {
     }
     return y;
 };
+const cubicSlope = (input, 
+/** range from 0..1 */
+bias) => {
+    return cubicBezier(input, 1 - bias, bias, 1 - bias, bias);
+};
+/**
+ * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
+ */
+const cubicBezier = (x, x1, y1, x2, y2) => {
+    // Helper functions:
+    const slopeFromT = (t, A, B, C) => {
+        const dtdx = 1.0 / (3.0 * A * t * t + 2.0 * B * t + C);
+        return dtdx;
+    };
+    const xFromT = (t, A, B, C, D) => {
+        const x = A * (t * t * t) + B * (t * t) + C * t + D;
+        return x;
+    };
+    const yFromT = (t, E, F, G, H) => {
+        const y = E * (t * t * t) + F * (t * t) + G * t + H;
+        return y;
+    };
+    const y0a = 0.00; // initial y
+    const x0a = 0.00; // initial x 
+    const y1a = y1; // 1st influence y   
+    const x1a = x1; // 1st influence x 
+    const y2a = y2; // 2nd influence y
+    const x2a = x2; // 2nd influence x
+    const y3a = 1.00; // final y 
+    const x3a = 1.00; // final x 
+    const A = x3a - 3 * x2a + 3 * x1a - x0a;
+    const B = 3 * x2a - 6 * x1a + 3 * x0a;
+    const C = 3 * x1a - 3 * x0a;
+    const D = x0a;
+    const E = y3a - 3 * y2a + 3 * y1a - y0a;
+    const F = 3 * y2a - 6 * y1a + 3 * y0a;
+    const G = 3 * y1a - 3 * y0a;
+    const H = y0a;
+    // Solve for t given x (using Newton-Raphelson), then solve for y given t.
+    // Assume for the first guess that t = x.
+    let currentT = x;
+    const nRefinementIterations = 5;
+    for (let i = 0; i < nRefinementIterations; i++) {
+        const currentX = xFromT(currentT, A, B, C, D);
+        const currentSlope = slopeFromT(currentT, A, B, C);
+        currentT -= (currentX - x) * (currentSlope);
+        currentT = clamp(currentT, 0, 1);
+    }
+    const y = yFromT(currentT, E, F, G, H);
+    return y;
+};
 /**
  * Snaps values to nearest multiple of `step`
  */
@@ -181,6 +235,50 @@ bias) => {
  */
 const logistic = (input, gain) => {
     return uniToBi(1 / (1 + Math.exp(-gain * input)));
+};
+/**
+ * @see https://www.flong.com/archive/texts/code/shapers_poly/
+ */
+const doubleCubicSeat = (input, x, y) => {
+    const epsilon = 0.00001;
+    const min_param_a = 0.0 + epsilon;
+    const max_param_a = 1.0 - epsilon;
+    const min_param_b = 0.0;
+    const max_param_b = 1.0;
+    const clampedA = Math.min(max_param_a, Math.max(min_param_a, x));
+    const clampedB = Math.min(max_param_b, Math.max(min_param_b, y));
+    if (input <= clampedA) {
+        return clampedB - clampedB * Math.pow(1 - input / clampedA, 3.0);
+    }
+    else {
+        return clampedB + (1 - clampedB) * Math.pow((input - clampedA) / (1 - clampedA), 3.0);
+    }
+};
+/**
+ * @see https://www.flong.com/archive/texts/code/shapers_poly/
+ */
+const doubleCubicSeatWithLinearBlend = (input, x, b) => {
+    const epsilon = 0.00001;
+    const min_param_a = 0.0 + epsilon;
+    const max_param_a = 1.0 - epsilon;
+    const min_param_b = 0.0;
+    const max_param_b = 1.0;
+    x = Math.min(max_param_a, Math.max(min_param_a, x));
+    b = Math.min(max_param_b, Math.max(min_param_b, b));
+    b = 1.0 - b; //reverse for intelligibility.
+    if (input <= x) {
+        return b * input + (1 - b) * x * (1 - Math.pow(1 - input / x, 3.0));
+    }
+    else {
+        return b * input + (1 - b) * (x + (1 - x) * Math.pow((input - x) / (1 - x), 3.0));
+    }
+};
+/**
+ * @see https://iquilezles.org/articles/functions/
+ */
+const pcurve = (x, a, b) => {
+    const k = Math.pow(a + b, a + b) / (Math.pow(a, a) * Math.pow(b, b));
+    return k * Math.pow(x, a) * Math.pow(1.0 - x, b);
 };
 /**
  *
@@ -260,6 +358,7 @@ const functions = {
     doubleExponentialSeat,
     quantize,
     fold,
+    pcurve,
     sineFold,
     circularArc,
     logistic,
@@ -268,5 +367,5 @@ const functions = {
     polyline,
     mirrorAcrossY,
     mirrorAcrossOrigin,
-    inflectionThroughPoint
-};export{biToUni,circularArc,clamp,functions as default,doubleExponentialSeat,doubleExponentialSigmoid,ease,fold,inflectionThroughPoint,lerp,linearStep,logistic,mirrorAcrossOrigin,mirrorAcrossY,polyline,quadraticBezier,quadraticSlope,quadraticThroughAGivenPoint,quantize,sineFold,smoothStep,tanh,uniToBi};
+    inflectionThroughPoint,
+};export{biToUni,circularArc,clamp,cubicBezier,cubicSlope,functions as default,doubleCubicSeat,doubleCubicSeatWithLinearBlend,doubleExponentialSeat,doubleExponentialSigmoid,ease,fold,inflectionThroughPoint,lerp,linearStep,logistic,mirrorAcrossOrigin,mirrorAcrossY,pcurve,polyline,quadraticBezier,quadraticSlope,quadraticThroughAGivenPoint,quantize,sineFold,smoothStep,tanh,uniToBi};

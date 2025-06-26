@@ -2,6 +2,9 @@ import {
   tanh,
   doubleExponentialSigmoid,
   quadraticSlope,
+  quadraticBezier,
+  cubicBezier,
+  cubicSlope,
   circularArc,
   ease,
   quantize,
@@ -13,6 +16,9 @@ import {
   smoothStep,
   // generalizedLogistic,
   linearStep,
+  pcurve,
+  doubleCubicSeat,
+  doubleCubicSeatWithLinearBlend,
   polyline,
   doubleExponentialSeat
 } from "data-lathe";
@@ -71,6 +77,58 @@ export const functions = [
     features: { mirrorXY: true },
     params: [{ name: "bias", default: 1, min: 0, max: 1 }],
     y: "bias",
+  },
+  {
+    name: "quadraticBezier",
+    fn: quadraticBezier,
+    features: { mirrorXY: true },
+    params: [
+      { name: "x", default: 0.5, min: 0, max: 1 },
+      { name: "y", default: 0.5, min: 0, max: 1 }
+    ],
+    x: "x",
+    y: "y",
+  },
+    {
+    name: "cubicSlope",
+    fn: cubicSlope,
+    features: { mirrorXY: true },
+    params: [
+      { name: "bias", default: 1, min: 0, max: 1 },
+      { name: "tension", default: 0.5, min: 0, max: 1 }],
+    y: "bias",
+  },
+  {
+    name: "pcurve",
+    fn: pcurve,
+    features: { mirrorXY: true },
+    params: [
+      { name: "a", default: 1, min: 0, max: 1 },
+      { name: "b", default: 1, min: 0, max: 1 }
+    ],
+    // y: "bias",
+  },
+  {
+    name: "doubleCubicSeat",
+    fn: doubleCubicSeat,
+    features: { mirrorXY: true },
+    params: [
+      { name: "x", default: 1, min: 0, max: 1 },
+      { name: "y", default: 1, min: 0, max: 1 }
+    ],
+    x: "x",
+    y: "y",
+  },
+  {
+    name: "doubleCubicSeatWithLinearBlend",
+    fn: doubleCubicSeatWithLinearBlend,
+    features: { mirrorXY: true },
+    params: [
+      { name: "x", default: 1, min: 0, max: 1 },
+      { name: "y", default: 1, min: 0, max: 1 }
+    ],
+    x: "x",
+    y: "y",
   },
   {
     name: "polyline",

@@ -43,6 +43,11 @@ export declare const doubleExponentialSigmoid: (x: number, a: number) => number;
  * @see http://www.flong.com/archive/texts/code/shapers_exp/index.html
  */
 export declare const doubleExponentialSeat: (input: number, a: number) => number;
+export declare const cubicSlope: (input: number, bias: number) => number;
+/**
+ * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
+ */
+export declare const cubicBezier: (x: number, x1: number, y1: number, x2: number, y2: number) => number;
 /**
  * Snaps values to nearest multiple of `step`
  */
@@ -60,6 +65,18 @@ export declare const circularArc: (input: number, bias: number) => number;
  * An automatic bi version of the logistic sigmoid function
  */
 export declare const logistic: (input: number, gain: number) => number;
+/**
+ * @see https://www.flong.com/archive/texts/code/shapers_poly/
+ */
+export declare const doubleCubicSeat: (input: number, x: number, y: number) => number;
+/**
+ * @see https://www.flong.com/archive/texts/code/shapers_poly/
+ */
+export declare const doubleCubicSeatWithLinearBlend: (input: number, x: number, b: number) => number;
+/**
+ * @see https://iquilezles.org/articles/functions/
+ */
+export declare const pcurve: (x: number, a: number, b: number) => number;
 /**
  *
  * @see https://en.wikipedia.org/wiki/Smoothstep#cite_note-5
@@ -99,6 +116,7 @@ declare const functions: {
     doubleExponentialSeat: (input: number, a: number) => number;
     quantize: (input: number, step: number, algorithm?: "round" | "ceil" | "floor") => number;
     fold: (input: number, gain: number) => number;
+    pcurve: (x: number, a: number, b: number) => number;
     sineFold: (input: number, gain: number) => number;
     circularArc: (input: number, bias: number) => number;
     logistic: (input: number, gain: number) => number;
