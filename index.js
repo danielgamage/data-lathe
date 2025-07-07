@@ -13,12 +13,10 @@ const uniToBi = (v) => v * 2 - 1;
 /**
  * Maps a number from one range to another, optionally clamping it to the input range
  */
-const remapRange = (input, inputRange, outputRange = [0, 1], clampInput = true) => {
-    const [inMin, inMax] = inputRange;
-    const [outMin, outMax] = outputRange;
-    const clampedInput = clampInput ? clamp(input, inMin, inMax) : input;
-    const normalized = (clampedInput - inMin) / (inMax - inMin);
-    return lerp(normalized, outMin, outMax);
+const remapRange = (input, inputMin = 0, inputMax = 1, outputMin = 0, outputMax = 1, clampInput = true) => {
+    const clampedInput = clampInput ? clamp(input, inputMin, inputMax) : input;
+    const normalized = (clampedInput - inputMin) / (inputMax - inputMin);
+    return lerp(normalized, outputMin, outputMax);
 };
 /**
  * Clamps overflowing numbers within the closed interval [min, max]

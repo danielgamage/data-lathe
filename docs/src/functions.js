@@ -1,42 +1,37 @@
-import {
-  tanh,
-  doubleExponentialSigmoid,
-  quadraticSlope,
-  quadraticBezier,
-  cubicBezier,
-  cubicSlope,
-  circularArc,
-  ease,
-  quantize,
-  fold,
-  sineFold,
-  uniToBi,
-  biToUni,
-  logistic,
-  smoothStep,
-  // generalizedLogistic,
-  linearStep,
-  pcurve,
-  doubleCubicSeat,
-  doubleCubicSeatWithLinearBlend,
-  polyline,
-  doubleExponentialSeat
-} from "data-lathe";
+import * as lathe from "data-lathe";
 
 export const functions = [
   {
     name: "uniToBi",
-    fn: uniToBi,
+    fn: lathe.uniToBi,
     features: { bidi: true },
   },
   {
     name: "biToUni",
-    fn: biToUni,
+    fn: lathe.biToUni,
     features: { bidi: true },
   },
   {
+    name: "clamp",
+    fn: lathe.clamp,
+    params: [
+      { name: "min", default: 0.25, min: -1, max: 1 },
+      { name: "max", default: 0.75, min: -1, max: 1 },
+    ]
+  },
+  {
+    name: "remapRange",
+    fn: lathe.remapRange,
+    params: [
+      { name: "fromMin", default: 0, min: -1, max: 1 },
+      { name: "fromMax", default: 1, min: -1, max: 1 },
+      { name: "toMin", default: 0.25, min: -1, max: 1 },
+      { name: "toMax", default: 0.75, min: -1, max: 1 },
+    ],
+  },
+  {
     name: "ease",
-    fn: ease,
+    fn: lathe.ease,
     features: { mirrorXY: true },
     params: [
       { name: "order", default: 3, min: -6, max: 6 },
@@ -44,24 +39,24 @@ export const functions = [
   },
   {
     name: "circularArc",
-    fn: circularArc,
+    fn: lathe.circularArc,
     features: { mirrorXY: true },
     params: [{ name: "bias", default: 1, min: 0, max: 1 }],
     y: "bias",
   },
   {
     name: "tanh",
-    fn: tanh,
+    fn: lathe.tanh,
     params: [{ name: "gain", default: 1, min: 1, max: 10 }],
   },
   {
     name: "logistic",
-    fn: logistic,
+    fn: lathe.logistic,
     params: [{ name: "gain", default: 2, min: 1, max: 10 }],
   },
   // {
   //   name: "generalizedLogistic",
-  //   fn: generalizedLogistic,
+  //   fn: lathe.generalizedLogistic,
   //   params: [
   //     { name: "A", default: 0, min: 0, max: 1 },
   //     { name: "K", default: 1, min: 0, max: 1 },
@@ -73,14 +68,14 @@ export const functions = [
   // },
   {
     name: "quadraticSlope",
-    fn: quadraticSlope,
+    fn: lathe.quadraticSlope,
     features: { mirrorXY: true },
     params: [{ name: "bias", default: 1, min: 0, max: 1 }],
     y: "bias",
   },
   {
     name: "quadraticBezier",
-    fn: quadraticBezier,
+    fn: lathe.quadraticBezier,
     features: { mirrorXY: true },
     params: [
       { name: "x", default: 0.5, min: 0, max: 1 },
@@ -91,7 +86,7 @@ export const functions = [
   },
     {
     name: "cubicSlope",
-    fn: cubicSlope,
+    fn: lathe.cubicSlope,
     features: { mirrorXY: true },
     params: [
       { name: "bias", default: 1, min: 0, max: 1 },
@@ -100,7 +95,7 @@ export const functions = [
   },
   {
     name: "pcurve",
-    fn: pcurve,
+    fn: lathe.pcurve,
     features: { mirrorXY: true },
     params: [
       { name: "a", default: 1, min: 0, max: 1 },
@@ -110,7 +105,7 @@ export const functions = [
   },
   {
     name: "doubleCubicSeat",
-    fn: doubleCubicSeat,
+    fn: lathe.doubleCubicSeat,
     features: { mirrorXY: true },
     params: [
       { name: "x", default: 1, min: 0, max: 1 },
@@ -121,7 +116,7 @@ export const functions = [
   },
   {
     name: "doubleCubicSeatWithLinearBlend",
-    fn: doubleCubicSeatWithLinearBlend,
+    fn: lathe.doubleCubicSeatWithLinearBlend,
     features: { mirrorXY: true },
     params: [
       { name: "x", default: 1, min: 0, max: 1 },
@@ -132,7 +127,7 @@ export const functions = [
   },
   {
     name: "polyline",
-    fn: polyline,
+    fn: lathe.polyline,
     params: [
       { name: "x", default: 0.5, min: 0, max: 1 },
       { name: "y", default: 0.3, min: 0, max: 1 },
@@ -142,7 +137,7 @@ export const functions = [
   },
   {
     name: "linearStep",
-    fn: linearStep,
+    fn: lathe.linearStep,
     params: [
       { name: "x₁", default: 0.2, min: 0, max: 1 },
       { name: "x₂", default: 0.8, min: 0, max: 1 },
@@ -150,7 +145,7 @@ export const functions = [
   },
   {
     name: "smoothStep",
-    fn: smoothStep,
+    fn: lathe.smoothStep,
     params: [
       { name: "x₁", default: 0, min: 0, max: 1 },
       { name: "x₂", default: 1, min: 0, max: 1 },
@@ -158,17 +153,17 @@ export const functions = [
   },
   {
     name: "doubleExponentialSigmoid",
-    fn: doubleExponentialSigmoid,
+    fn: lathe.doubleExponentialSigmoid,
     params: [{ name: "gain", default: 0, min: 0, max: 1 }],
   },
   {
     name: "doubleExponentialSeat",
-    fn: doubleExponentialSeat,
+    fn: lathe.doubleExponentialSeat,
     params: [{ name: "gain", default: 0, min: 0, max: 1 }],
   },
   {
     name: "quantize",
-    fn: quantize,
+    fn: lathe.quantize,
     params: [
       {
         name: "step",
@@ -177,7 +172,7 @@ export const functions = [
         max: 1,
         ticks: Array(4)
           .fill()
-          .map((el, i) => quantize(1 / (i + 1), 0.001)),
+          .map((el, i) => lathe.quantize(1 / (i + 1), 0.001)),
       },
       {
         name: "algorithm",
@@ -189,7 +184,7 @@ export const functions = [
   },
   {
     name: "fold",
-    fn: fold,
+    fn: lathe.fold,
     features: { bidi: true },
     params: [
       {
@@ -203,7 +198,7 @@ export const functions = [
   },
   {
     name: "sineFold",
-    fn: sineFold,
+    fn: lathe.sineFold,
     features: { bidi: true },
     params: [
       {

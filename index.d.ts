@@ -1,5 +1,3 @@
-/** Contains the minimum and maximum of a range */
-declare type Range = [number, number];
 /**
  * Maps bipolar numbers [-1, 1] to the unipolar closed unit interval [0, 1]
  */
@@ -11,7 +9,7 @@ export declare const uniToBi: (v: number) => number;
 /**
  * Maps a number from one range to another, optionally clamping it to the input range
  */
-export declare const remapRange: (input: number, inputRange: Range, outputRange?: Range, clampInput?: boolean) => number;
+export declare const remapRange: (input: number, inputMin?: number, inputMax?: number, outputMin?: number, outputMax?: number, clampInput?: boolean) => number;
 /**
  * Clamps overflowing numbers within the closed interval [min, max]
  */
@@ -109,4 +107,3 @@ export declare const mirrorAcrossOrigin: (input: number, fn: any, ...args: any[]
  * Calls function `fn` reflected across the point at `x`, `y`
  */
 export declare function inflectionThroughPoint<Fn extends (...args: any[]) => number>(input: any, x: any, y: any, fn: Fn, ...args: Omit<Parameters<Fn>, "input">): any;
-export {};
