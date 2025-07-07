@@ -1,6 +1,3 @@
-/** Contains the minimum and maximum of a range */
-type Range = [number, number]
-
 /**
  * Helper to prevent x÷0 (example)
  */
@@ -17,12 +14,10 @@ export const uniToBi = (v: number) => v * 2 - 1
 /**
  * Maps a number from one range to another, optionally clamping it to the input range
  */
-export const remapRange = (input: number, inputRange: Range, outputRange: Range = [0, 1], clampInput = true) => {
-  const [inMin, inMax] = inputRange
-  const [outMin, outMax] = outputRange
-  const clampedInput = clampInput ? clamp(input, inMin, inMax) : input
-  const normalized = (clampedInput - inMin) / (inMax - inMin)
-  return lerp(normalized, outMin, outMax)
+export const remapRange = (input: number, inputMin = 0, inputMax = 1, outputMin = 0, outputMax = 1, clampInput = true) => {
+  const clampedInput = clampInput ? clamp(input, inputMin, inputMax) : input
+  const normalized = (clampedInput - inputMin) / (inputMax - inputMin)
+  return lerp(normalized, outputMin, outputMax)
 }
 
 /**
