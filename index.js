@@ -11,6 +11,16 @@ const biToUni = (v) => v / 2 + 0.5;
  */
 const uniToBi = (v) => v * 2 - 1;
 /**
+ * Maps a number from one range to another, optionally clamping it to the input range
+ */
+const remapRange = (input, inputRange, outputRange = [0, 1], clampInput = true) => {
+    const [inMin, inMax] = inputRange;
+    const [outMin, outMax] = outputRange;
+    const clampedInput = clampInput ? clamp(input, inMin, inMax) : input;
+    const normalized = (clampedInput - inMin) / (inMax - inMin);
+    return lerp(normalized, outMin, outMax);
+};
+/**
  * Clamps overflowing numbers within the closed interval [min, max]
  */
 const clamp = (x, min, max) => {
@@ -135,8 +145,20 @@ const doubleExponentialSeat = (input, a) => {
 };
 const cubicSlope = (input, 
 /** range from 0..1 */
-bias) => {
-    return cubicBezier(input, 1 - bias, bias, 1 - bias, bias);
+bias, 
+/** range from 0..1 */
+tension = 0.5) => {
+    // Calculate pointA based on bias
+    const pointA = [
+        tension * (1 - bias),
+        tension * (bias) // y goes from 0 to 1 as bias goes 0->1
+    ];
+    // Calculate pointB as the mirrored point of pointA
+    const pointB = [
+        1 - pointA[1],
+        1 - pointA[0]
+    ];
+    return cubicBezier(input, pointA[0], pointA[1], pointB[0], pointB[1]);
 };
 /**
  * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
@@ -344,28 +366,4 @@ function inflectionThroughPoint(input, x, y, fn, ...args) {
         return (1 - fn(1 - (input - x) / (1 - x + epsilon), ...args)) * (1 - y) + y;
         // input scaled to 0 1
     }
-}
-const functions = {
-    biToUni,
-    uniToBi,
-    clamp,
-    lerp,
-    tanh,
-    quadraticThroughAGivenPoint,
-    quadraticBezier,
-    quadraticSlope,
-    doubleExponentialSigmoid,
-    doubleExponentialSeat,
-    quantize,
-    fold,
-    pcurve,
-    sineFold,
-    circularArc,
-    logistic,
-    smoothStep,
-    linearStep,
-    polyline,
-    mirrorAcrossY,
-    mirrorAcrossOrigin,
-    inflectionThroughPoint,
-};export{biToUni,circularArc,clamp,cubicBezier,cubicSlope,functions as default,doubleCubicSeat,doubleCubicSeatWithLinearBlend,doubleExponentialSeat,doubleExponentialSigmoid,ease,fold,inflectionThroughPoint,lerp,linearStep,logistic,mirrorAcrossOrigin,mirrorAcrossY,pcurve,polyline,quadraticBezier,quadraticSlope,quadraticThroughAGivenPoint,quantize,sineFold,smoothStep,tanh,uniToBi};
+}export{biToUni,circularArc,clamp,cubicBezier,cubicSlope,doubleCubicSeat,doubleCubicSeatWithLinearBlend,doubleExponentialSeat,doubleExponentialSigmoid,ease,fold,inflectionThroughPoint,lerp,linearStep,logistic,mirrorAcrossOrigin,mirrorAcrossY,pcurve,polyline,quadraticBezier,quadraticSlope,quadraticThroughAGivenPoint,quantize,remapRange,sineFold,smoothStep,tanh,uniToBi};

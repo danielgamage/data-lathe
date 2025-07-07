@@ -1,3 +1,6 @@
+/** Contains the minimum and maximum of a range */
+type Range = [number, number]
+
 /**
  * Helper to prevent x÷0 (example)
  */
@@ -14,7 +17,7 @@ export const uniToBi = (v: number) => v * 2 - 1
 /**
  * Maps a number from one range to another, optionally clamping it to the input range
  */
-export const remapRange = (input: number, inputRange: [number, number], outputRange: [number, number] = [0, 1], clampInput = true) => {
+export const remapRange = (input: number, inputRange: Range, outputRange: Range = [0, 1], clampInput = true) => {
   const [inMin, inMax] = inputRange
   const [outMin, outMax] = outputRange
   const clampedInput = clampInput ? clamp(input, inMin, inMax) : input
@@ -431,34 +434,3 @@ export function inflectionThroughPoint<Fn extends (...args: any[]) => number>(
     // input scaled to 0 1
   }
 }
-
-const functions = {
-  biToUni,
-  uniToBi,
-  clamp,
-  lerp,
-  tanh,
-  quadraticThroughAGivenPoint,
-  quadraticBezier,
-  quadraticSlope,
-  doubleExponentialSigmoid,
-  doubleExponentialSeat,
-  doubleCubicSeat,
-  doubleCubicSeatWithLinearBlend,
-  quantize,
-  fold,
-  cubicSlope,
-  cubicBezier,
-  pcurve,
-  sineFold,
-  circularArc,
-  logistic,
-  smoothStep,
-  linearStep,
-  polyline,
-  mirrorAcrossY,
-  mirrorAcrossOrigin,
-  inflectionThroughPoint,
-}
-
-export default functions

@@ -1,3 +1,5 @@
+/** Contains the minimum and maximum of a range */
+declare type Range = [number, number];
 /**
  * Maps bipolar numbers [-1, 1] to the unipolar closed unit interval [0, 1]
  */
@@ -6,6 +8,10 @@ export declare const biToUni: (v: number) => number;
  * Maps unipolar numbers [0, 1] to the bipolar closed interval [-1, 1]
  */
 export declare const uniToBi: (v: number) => number;
+/**
+ * Maps a number from one range to another, optionally clamping it to the input range
+ */
+export declare const remapRange: (input: number, inputRange: Range, outputRange?: Range, clampInput?: boolean) => number;
 /**
  * Clamps overflowing numbers within the closed interval [min, max]
  */
@@ -43,7 +49,7 @@ export declare const doubleExponentialSigmoid: (x: number, a: number) => number;
  * @see http://www.flong.com/archive/texts/code/shapers_exp/index.html
  */
 export declare const doubleExponentialSeat: (input: number, a: number) => number;
-export declare const cubicSlope: (input: number, bias: number) => number;
+export declare const cubicSlope: (input: number, bias: number, tension?: number) => number;
 /**
  * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
  */
@@ -103,28 +109,4 @@ export declare const mirrorAcrossOrigin: (input: number, fn: any, ...args: any[]
  * Calls function `fn` reflected across the point at `x`, `y`
  */
 export declare function inflectionThroughPoint<Fn extends (...args: any[]) => number>(input: any, x: any, y: any, fn: Fn, ...args: Omit<Parameters<Fn>, "input">): any;
-declare const functions: {
-    biToUni: (v: number) => number;
-    uniToBi: (v: number) => number;
-    clamp: (x: number, min: number, max: number) => number;
-    lerp: (input: number, a: number, b: number) => number;
-    tanh: (x: any, gain?: number) => number;
-    quadraticThroughAGivenPoint: (input: number, x: number, y: number, clamped?: boolean) => number;
-    quadraticBezier: (input: number, x: number, y: number) => number;
-    quadraticSlope: (input: number, bias: number) => number;
-    doubleExponentialSigmoid: (x: number, a: number) => number;
-    doubleExponentialSeat: (input: number, a: number) => number;
-    quantize: (input: number, step: number, algorithm?: "round" | "ceil" | "floor") => number;
-    fold: (input: number, gain: number) => number;
-    pcurve: (x: number, a: number, b: number) => number;
-    sineFold: (input: number, gain: number) => number;
-    circularArc: (input: number, bias: number) => number;
-    logistic: (input: number, gain: number) => number;
-    smoothStep: (input: number, edge0: number, edge1: number) => number;
-    linearStep: (input: number, x: number, y: number) => number;
-    polyline: (input: number, midpointX: number, midpointY: number) => number;
-    mirrorAcrossY: (input: number, fn: any, ...args: any[]) => any;
-    mirrorAcrossOrigin: (input: number, fn: any, ...args: any[]) => any;
-    inflectionThroughPoint: typeof inflectionThroughPoint;
-};
-export default functions;
+export {};
