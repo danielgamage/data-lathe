@@ -11,6 +11,16 @@ export const biToUni = (v: number) => v / 2 + 0.5
  * Maps unipolar numbers [0, 1] to the bipolar closed interval [-1, 1]
  */
 export const uniToBi = (v: number) => v * 2 - 1
+/**
+ * Maps a number from one range to another, optionally clamping it to the input range
+ */
+export const remapRange = (input: number, inputRange: [number, number], outputRange: [number, number] = [0, 1], clampInput = true) => {
+  const [inMin, inMax] = inputRange
+  const [outMin, outMax] = outputRange
+  const clampedInput = clampInput ? clamp(input, inMin, inMax) : input
+  const normalized = (clampedInput - inMin) / (inMax - inMin)
+  return lerp(normalized, outMin, outMax)
+}
 
 /**
  * Clamps overflowing numbers within the closed interval [min, max]
