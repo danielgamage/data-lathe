@@ -71,6 +71,7 @@ export const FunctionReference = ({ fn }) => {
   let minimumInput = bidi ? -1 : 0
   let maximumInput = 1
 
+  console.log({data, fn: fn.name})
   useEffect(() => {
     if (data === undefined) return
 
