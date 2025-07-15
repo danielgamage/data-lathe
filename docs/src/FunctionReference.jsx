@@ -5,9 +5,9 @@ import {
   mirrorAcrossY,
   mirrorAcrossOrigin,
   inflectionThroughPoint,
+  clamp
 } from "data-lathe"
 import { useDrag } from "@use-gesture/react"
-import dataLathe, { clamp } from "data-lathe"
 import { IconToggle } from "./IconToggle"
 import { Range } from "./Range"
 

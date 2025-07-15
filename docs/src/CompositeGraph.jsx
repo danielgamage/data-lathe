@@ -1,19 +1,12 @@
 import * as Plot from "@observablehq/plot"
 import { useEffect, useId, useRef, useState } from "react"
 import useMeasure from "react-use-measure"
-import {
-  mirrorAcrossY,
-  mirrorAcrossOrigin,
-  inflectionThroughPoint,
-} from "data-lathe"
-import { useDrag } from "@use-gesture/react"
-import dataLathe, { clamp } from "data-lathe"
 import { IconToggle } from "./IconToggle"
 import { Range } from "./Range"
 import { functions } from "./functions.js"
-import produce from "immer"
+import {produce} from "immer"
 import { useOnClickOutside } from "usehooks-ts"
-import { DraggableList } from "./DraggableList.tsx"
+import { DraggableList } from "../../docs2/src/DraggableList.tsx"
 import SVG from "react-inlinesvg"
 import Button from "./Button.tsx"
 
