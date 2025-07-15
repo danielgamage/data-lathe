@@ -177,7 +177,7 @@ export const cubicSlope = (
   tension: number = 0.5
 ) => {
   if ([0, 1].includes(input)) {
-    return input
+    return input;
   }
   // Calculate pointA based on bias
   const pointA = [

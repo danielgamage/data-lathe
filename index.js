@@ -146,16 +146,16 @@ const cubicSlope = (input,
 bias, 
 /** range from 0..1 */
 tension = 0.5) => {
+    if ([0, 1].includes(input)) {
+        return input;
+    }
     // Calculate pointA based on bias
     const pointA = [
         tension * (1 - bias),
-        tension * (bias) // y goes from 0 to 1 as bias goes 0->1
+        tension * bias, // y goes from 0 to 1 as bias goes 0->1
     ];
     // Calculate pointB as the mirrored point of pointA
-    const pointB = [
-        1 - pointA[1],
-        1 - pointA[0]
-    ];
+    const pointB = [1 - pointA[1], 1 - pointA[0]];
     return cubicBezier(input, pointA[0], pointA[1], pointB[0], pointB[1]);
 };
 /**
@@ -175,14 +175,14 @@ const cubicBezier = (x, x1, y1, x2, y2) => {
         const y = E * (t * t * t) + F * (t * t) + G * t + H;
         return y;
     };
-    const y0a = 0.00; // initial y
-    const x0a = 0.00; // initial x 
-    const y1a = y1; // 1st influence y   
-    const x1a = x1; // 1st influence x 
+    const y0a = 0.0; // initial y
+    const x0a = 0.0; // initial x
+    const y1a = y1; // 1st influence y
+    const x1a = x1; // 1st influence x
     const y2a = y2; // 2nd influence y
     const x2a = x2; // 2nd influence x
-    const y3a = 1.00; // final y 
-    const x3a = 1.00; // final x 
+    const y3a = 1.0; // final y
+    const x3a = 1.0; // final x
     const A = x3a - 3 * x2a + 3 * x1a - x0a;
     const B = 3 * x2a - 6 * x1a + 3 * x0a;
     const C = 3 * x1a - 3 * x0a;
@@ -198,7 +198,7 @@ const cubicBezier = (x, x1, y1, x2, y2) => {
     for (let i = 0; i < nRefinementIterations; i++) {
         const currentX = xFromT(currentT, A, B, C, D);
         const currentSlope = slopeFromT(currentT, A, B, C);
-        currentT -= (currentX - x) * (currentSlope);
+        currentT -= (currentX - x) * currentSlope;
         currentT = clamp(currentT, 0, 1);
     }
     const y = yFromT(currentT, E, F, G, H);
@@ -271,7 +271,8 @@ const doubleCubicSeat = (input, x, y) => {
         return clampedB - clampedB * Math.pow(1 - input / clampedA, 3.0);
     }
     else {
-        return clampedB + (1 - clampedB) * Math.pow((input - clampedA) / (1 - clampedA), 3.0);
+        return (clampedB +
+            (1 - clampedB) * Math.pow((input - clampedA) / (1 - clampedA), 3.0));
     }
 };
 /**
@@ -290,7 +291,7 @@ const doubleCubicSeatWithLinearBlend = (input, x, b) => {
         return b * input + (1 - b) * x * (1 - Math.pow(1 - input / x, 3.0));
     }
     else {
-        return b * input + (1 - b) * (x + (1 - x) * Math.pow((input - x) / (1 - x), 3.0));
+        return (b * input + (1 - b) * (x + (1 - x) * Math.pow((input - x) / (1 - x), 3.0)));
     }
 };
 /**
