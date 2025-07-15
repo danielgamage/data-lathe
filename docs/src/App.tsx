@@ -1,4 +1,4 @@
-import { CompositeGraph } from "./CompositeGraph"
+import { CompositeGraph } from "./CompositeGraph.js"
 import { FunctionReference } from "./FunctionReference"
 import { functions } from "./functions.js"
 

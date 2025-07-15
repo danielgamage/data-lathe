@@ -2,13 +2,13 @@ import * as Plot from "@observablehq/plot"
 import { useEffect, useId, useRef, useState } from "react"
 import useMeasure from "react-use-measure"
 import { IconToggle } from "./IconToggle"
-import { Range } from "./Range"
+import { Range } from "./Range.js"
 import { functions } from "./functions.js"
 import {produce} from "immer"
 import { useOnClickOutside } from "usehooks-ts"
-import { DraggableList } from "../../docs2/src/DraggableList.tsx"
+import { DraggableList } from "./DraggableList"
 import SVG from "react-inlinesvg"
-import Button from "./Button.tsx"
+import Button from "./Button"
 
 export const CompositeGraph = ({}) => {
   const id = useId()
