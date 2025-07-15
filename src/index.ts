@@ -14,7 +14,14 @@ export const uniToBi = (v: number) => v * 2 - 1
 /**
  * Maps a number from one range to another, optionally clamping it to the input range
  */
-export const remapRange = (input: number, inputMin = 0, inputMax = 1, outputMin = 0, outputMax = 1, clampInput = true) => {
+export const remapRange = (
+  input: number,
+  inputMin = 0,
+  inputMax = 1,
+  outputMin = 0,
+  outputMax = 1,
+  clampInput = true
+) => {
   const clampedInput = clampInput ? clamp(input, inputMin, inputMax) : input
   const normalized = (clampedInput - inputMin) / (inputMax - inputMin)
   return lerp(normalized, outputMin, outputMax)
@@ -101,8 +108,10 @@ export const quadraticBezier = (input: number, x: number, y: number) => {
   // adapted from BEZMATH.PS (1993)
   // by Don Lancaster, SYNERGETICS Inc.
   // http://www.tinaja.com/text/bezmath.html
-  
-  if (x === 0.5) { return input }
+
+  if (x === 0.5) {
+    return input
+  }
   let a = { x, y }
   a.x = clamp(a.x, 0.0, 1.0)
   a.y = clamp(a.y, 0.0, 1.0)
@@ -160,7 +169,6 @@ export const doubleExponentialSeat = (input: number, a: number) => {
   return y
 }
 
-
 export const cubicSlope = (
   input: number,
   /** range from 0..1 */
@@ -171,70 +179,73 @@ export const cubicSlope = (
   if ([0, 1].includes(input)) {
     return input
   }
-    // Calculate pointA based on bias
-    const pointA = [
-        tension * (1 - bias), // x goes from 1 to 0 as bias goes 0->1
-        tension * (bias)     // y goes from 0 to 1 as bias goes 0->1
-    ];
-    // Calculate pointB as the mirrored point of pointA
-    const pointB = [
-        1 - pointA[1],
-        1 - pointA[0]
-    ];
-    return cubicBezier(input, pointA[0], pointA[1], pointB[0], pointB[1]);
+  // Calculate pointA based on bias
+  const pointA = [
+    tension * (1 - bias), // x goes from 1 to 0 as bias goes 0->1
+    tension * bias, // y goes from 0 to 1 as bias goes 0->1
+  ]
+  // Calculate pointB as the mirrored point of pointA
+  const pointB = [1 - pointA[1], 1 - pointA[0]]
+  return cubicBezier(input, pointA[0], pointA[1], pointB[0], pointB[1])
 }
 /**
  * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
  */
-export const cubicBezier = (x: number, x1: number, y1: number, x2: number, y2: number) => {
+export const cubicBezier = (
+  x: number,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number
+) => {
   // Helper functions:
   const slopeFromT = (t: number, A: number, B: number, C: number) => {
-    const dtdx = 1.0/(3.0*A*t*t + 2.0*B*t + C); 
-    return dtdx;
+    const dtdx = 1.0 / (3.0 * A * t * t + 2.0 * B * t + C)
+    return dtdx
   }
 
   const xFromT = (t: number, A: number, B: number, C: number, D: number) => {
-    const x = A*(t*t*t) + B*(t*t) + C*t + D;
-    return x;
+    const x = A * (t * t * t) + B * (t * t) + C * t + D
+    return x
   }
 
   const yFromT = (t: number, E: number, F: number, G: number, H: number) => {
-    const y = E*(t*t*t) + F*(t*t) + G*t + H;
-    return y;
+    const y = E * (t * t * t) + F * (t * t) + G * t + H
+    return y
   }
 
-  const y0a = 0.00; // initial y
-  const x0a = 0.00; // initial x 
-  const y1a = y1;    // 1st influence y   
-  const x1a = x1;    // 1st influence x 
-  const y2a = y2;    // 2nd influence y
-  const x2a = x2;    // 2nd influence x
-  const y3a = 1.00; // final y 
-  const x3a = 1.00; // final x 
+  const y0a = 0.0 // initial y
+  const x0a = 0.0 // initial x
+  const y1a = y1 // 1st influence y
+  const x1a = x1 // 1st influence x
+  const y2a = y2 // 2nd influence y
+  const x2a = x2 // 2nd influence x
+  const y3a = 1.0 // final y
+  const x3a = 1.0 // final x
 
-  const A =   x3a - 3*x2a + 3*x1a - x0a;
-  const B = 3*x2a - 6*x1a + 3*x0a;
-  const C = 3*x1a - 3*x0a;   
-  const D =   x0a;
+  const A = x3a - 3 * x2a + 3 * x1a - x0a
+  const B = 3 * x2a - 6 * x1a + 3 * x0a
+  const C = 3 * x1a - 3 * x0a
+  const D = x0a
 
-  const E =   y3a - 3*y2a + 3*y1a - y0a;    
-  const F = 3*y2a - 6*y1a + 3*y0a;             
-  const G = 3*y1a - 3*y0a;             
-  const H =   y0a;
+  const E = y3a - 3 * y2a + 3 * y1a - y0a
+  const F = 3 * y2a - 6 * y1a + 3 * y0a
+  const G = 3 * y1a - 3 * y0a
+  const H = y0a
 
   // Solve for t given x (using Newton-Raphelson), then solve for y given t.
   // Assume for the first guess that t = x.
-  let currentT = x;
-  const nRefinementIterations = 5;
-  for (let i=0; i < nRefinementIterations; i++){
-    const currentX = xFromT (currentT, A,B,C,D); 
-    const currentSlope = slopeFromT (currentT, A,B,C);
-    currentT -= (currentX - x)*(currentSlope);
-    currentT = clamp(currentT, 0,1);
-  } 
+  let currentT = x
+  const nRefinementIterations = 5
+  for (let i = 0; i < nRefinementIterations; i++) {
+    const currentX = xFromT(currentT, A, B, C, D)
+    const currentSlope = slopeFromT(currentT, A, B, C)
+    currentT -= (currentX - x) * currentSlope
+    currentT = clamp(currentT, 0, 1)
+  }
 
-  const y = yFromT(currentT,  E,F,G,H);
-  return y;
+  const y = yFromT(currentT, E, F, G, H)
+  return y
 }
 
 /**
@@ -309,38 +320,47 @@ export const logistic = (input: number, gain: number) => {
  * @see https://www.flong.com/archive/texts/code/shapers_poly/
  */
 export const doubleCubicSeat = (input: number, x: number, y: number) => {
-  const epsilon = 0.00001;
-  const min_param_a = 0.0 + epsilon;
-  const max_param_a = 1.0 - epsilon;
-  const min_param_b = 0.0;
-  const max_param_b = 1.0;
-  const clampedA = Math.min(max_param_a, Math.max(min_param_a, x));
-  const clampedB = Math.min(max_param_b, Math.max(min_param_b, y));
-  
-  if (input <= clampedA){
-    return clampedB - clampedB * Math.pow(1-input/clampedA, 3.0);
+  const epsilon = 0.00001
+  const min_param_a = 0.0 + epsilon
+  const max_param_a = 1.0 - epsilon
+  const min_param_b = 0.0
+  const max_param_b = 1.0
+  const clampedA = Math.min(max_param_a, Math.max(min_param_a, x))
+  const clampedB = Math.min(max_param_b, Math.max(min_param_b, y))
+
+  if (input <= clampedA) {
+    return clampedB - clampedB * Math.pow(1 - input / clampedA, 3.0)
   } else {
-    return clampedB + (1 - clampedB) * Math.pow((input-clampedA)/(1-clampedA), 3.0);
+    return (
+      clampedB +
+      (1 - clampedB) * Math.pow((input - clampedA) / (1 - clampedA), 3.0)
+    )
   }
 }
 
 /**
  * @see https://www.flong.com/archive/texts/code/shapers_poly/
  */
-export const doubleCubicSeatWithLinearBlend = (input: number, x: number, b: number) => {
-  const epsilon = 0.00001;
-  const min_param_a = 0.0 + epsilon;
-  const max_param_a = 1.0 - epsilon;
-  const min_param_b = 0.0;
-  const max_param_b = 1.0;
-  x = Math.min(max_param_a, Math.max(min_param_a, x));  
-  b = Math.min(max_param_b, Math.max(min_param_b, b)); 
-  b = 1.0 - b; //reverse for intelligibility.
-  
-  if (input<=x){
-    return b*input + (1-b)*x*(1-Math.pow(1-input/x, 3.0));
+export const doubleCubicSeatWithLinearBlend = (
+  input: number,
+  x: number,
+  b: number
+) => {
+  const epsilon = 0.00001
+  const min_param_a = 0.0 + epsilon
+  const max_param_a = 1.0 - epsilon
+  const min_param_b = 0.0
+  const max_param_b = 1.0
+  x = Math.min(max_param_a, Math.max(min_param_a, x))
+  b = Math.min(max_param_b, Math.max(min_param_b, b))
+  b = 1.0 - b //reverse for intelligibility.
+
+  if (input <= x) {
+    return b * input + (1 - b) * x * (1 - Math.pow(1 - input / x, 3.0))
   } else {
-    return b*input + (1-b)*(x + (1-x)*Math.pow((input-x)/(1-x), 3.0));
+    return (
+      b * input + (1 - b) * (x + (1 - x) * Math.pow((input - x) / (1 - x), 3.0))
+    )
   }
 }
 
@@ -348,8 +368,8 @@ export const doubleCubicSeatWithLinearBlend = (input: number, x: number, b: numb
  * @see https://iquilezles.org/articles/functions/
  */
 export const pcurve = (x: number, a: number, b: number) => {
-  const k = Math.pow(a + b, a + b) / (Math.pow(a, a) * Math.pow(b, b));
-  return k * Math.pow(x, a) * Math.pow(1.0 - x, b);
+  const k = Math.pow(a + b, a + b) / (Math.pow(a, a) * Math.pow(b, b))
+  return k * Math.pow(x, a) * Math.pow(1.0 - x, b)
 }
 
 /**
