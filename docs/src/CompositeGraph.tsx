@@ -10,7 +10,7 @@ import { DraggableList } from "./DraggableList"
 import SVG from "react-inlinesvg"
 import Button from "./Button"
 
-export const CompositeGraph = ({}) => {
+export const CompositeGraph = ({ oversampling = 1, extendedRange = false }: { oversampling?: number; extendedRange?: boolean; fn?: unknown }) => {
   const id = useId()
 
   const dialogRef = useRef(null)
@@ -31,15 +31,16 @@ export const CompositeGraph = ({}) => {
   const width = bounds.width || 100
   const chartRef = useRef(null)
   const gradientRef = useRef(null)
-  const oversampling = 2
   const pointCount = Math.floor(width * oversampling)
+  const minimumInput = (bidi ? -1 : 0) - (extendedRange ? 1 : 0)
+  const maximumInput = 1 + (extendedRange ? 1 : 0)
+  const range = maximumInput - minimumInput
+  const midpoint = minimumInput + range / 2
   const source = Array(pointCount)
     .fill(0)
     .map((_, i) => {
-      let input = i / (pointCount - 1)
-      if (bidi) {
-        input = input * 2 - 1
-      }
+      const denom = pointCount > 1 ? pointCount - 1 : 1
+      const input = (i / denom) * range + minimumInput
       return {
         input: input,
         output: input,
@@ -58,13 +59,14 @@ export const CompositeGraph = ({}) => {
       output,
     }
   })
-  let minimumInput = bidi ? -1 : 0
-  let maximumInput = 1
 
   useEffect(() => {
     if (data === undefined) return
 
     const maxWidth = width
+    const FADE = 100
+    const maskId = `fade-mask-${id.replace(/:/g, "")}`
+    const dataLineClass = `data-line-${id.replace(/:/g, "")}`
     const chart = Plot.plot({
       width: maxWidth,
       height: maxWidth,
@@ -77,17 +79,12 @@ export const CompositeGraph = ({}) => {
       y: {
         ticks: bidi ? 4 : 5,
         domain: [minimumInput, maximumInput],
-        clamp: true,
       },
       style: {
         background: "transparent",
+        overflow: "visible",
       },
       grid: true,
-      color: {
-        type: "diverging",
-        scheme: "RdBu",
-        domain: [minimumInput, 1],
-      },
       marks: [
         Plot.tickY([0], { stroke: "var(--gray-6)" }),
         Plot.tickX([0], { stroke: "var(--gray-6)" }),
@@ -100,30 +97,56 @@ export const CompositeGraph = ({}) => {
         Plot.line(data, {
           x: "input",
           y: "output",
+          className: dataLineClass,
         }),
       ],
     })
+
+    // Inject a vertical fade mask so the data line fades to 0 opacity
+    // over FADE px above and below the chart frame.
+    const H = maxWidth
+    const svgNS = "http://www.w3.org/2000/svg"
+    const defs = document.createElementNS(svgNS, "defs")
+    const innerStop = FADE / (H + 2 * FADE)
+    defs.innerHTML = `
+      <linearGradient id="${maskId}-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="white" stop-opacity="0"/>
+        <stop offset="${innerStop}" stop-color="white" stop-opacity="1"/>
+        <stop offset="${1 - innerStop}" stop-color="white" stop-opacity="1"/>
+        <stop offset="1" stop-color="white" stop-opacity="0"/>
+      </linearGradient>
+      <mask id="${maskId}" maskUnits="userSpaceOnUse"
+            x="0" y="${-FADE}" width="${H}" height="${H + 2 * FADE}">
+        <rect x="0" y="${-FADE}" width="${H}" height="${H + 2 * FADE}"
+              fill="url(#${maskId}-grad)"/>
+      </mask>
+    `
+    chart.prepend(defs)
+    const dataGroup = chart.querySelector(`.${CSS.escape(dataLineClass)}`)
+    if (dataGroup) dataGroup.setAttribute("mask", `url(#${maskId})`)
+
     chartRef.current.append(chart)
     const gradient = Plot.plot({
       width: maxWidth,
       height: 16,
       margin: 1,
       x: {
-        scale: "linear",
         ticks: bidi ? 4 : 5,
         domain: [minimumInput, maximumInput],
       },
       color: {
         type: "diverging",
-        clamp: true,
+        clamp: false,
         range: [
+          "hsl(191.03, 100%, 100%)",
           "hsl(370.74, 74.68%, 90.58%)",
           "hsl(365.48, 55.27%, 44.69%)",
           "hsl(227.32, 20.47%, 7.51%)",
           "hsl(205.29, 76.67%, 46.61%)",
           "hsl(191.03, 77.58%, 90.42%)",
+          "hsl(191.03, 100%, 100%)",
         ],
-        domain: [minimumInput, maximumInput],
+        domain: [midpoint - minimumInput, midpoint + maximumInput],
       },
       marks: [
         Plot.tickX(data, { x: "input", stroke: "output", strokeWidth: 1.5 }),
@@ -145,6 +168,7 @@ export const CompositeGraph = ({}) => {
     multiStepPoint,
     multiStep,
     fnList,
+    id,
   ])
 
   const pushFn = (fnName) => {

@@ -11,7 +11,8 @@
   "scripts": {
     "build": "rm -rf dist/* && rollup --config",
     "test": "vitest --watch",
-    "test:ci": "vitest --ci"
+    "test:ci": "vitest --ci",
+    "copy-docs": "npm run build && cp index.js index.d.ts docs/node_modules/data-lathe/ && rm -rf docs/node_modules/.vite"
   },
   "browserslist": {
     "production": [

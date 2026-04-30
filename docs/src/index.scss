@@ -20,64 +20,66 @@
 }
 
 :root {
-  --gray-1: hsl(278.15, 17.54%, 82.10%);
-  --gray-2: hsl(267.80, 15.54%, 54.17%);
+  --gray-1: hsl(278.15, 17.54%, 82.1%);
+  --gray-2: hsl(267.8, 15.54%, 54.17%);
   --gray-3: hsl(259.22, 14.18%, 40.92%);
-  --gray-4: hsl(252.12, 13.43%, 32.70%);
+  --gray-4: hsl(252.12, 13.43%, 32.7%);
   --gray-5: hsl(246.27, 13.22%, 26.78%);
-  --gray-6: hsl(241.45, 13.50%, 22.16%);
+  --gray-6: hsl(241.45, 13.5%, 22.16%);
   --gray-7: hsl(237.48, 14.22%, 18.36%);
   --gray-8: hsl(234.21, 15.33%, 15.12%);
-  --gray-9: hsl(231.51, 16.78%, 12.30%);
+  --gray-9: hsl(231.51, 16.78%, 12.3%);
   --gray-10: hsl(229.25, 18.51%, 9.78%);
   --gray-11: hsl(227.32, 20.47%, 7.51%);
-  --gray-12: hsl(225.64, 22.60%, 5.42%);
-  
+  --gray-12: hsl(225.64, 22.6%, 5.42%);
+
   --pink-1: hsl(347.08, 74.68%, 85.71%);
   --pink-2: hsl(345.75, 72.62%, 74.65%);
-  --pink-3: hsl(341.64, 69.80%, 64.14%);
-  --pink-4: hsl(334.80, 66.21%, 54.22%);
+  --pink-3: hsl(341.64, 69.8%, 64.14%);
+  --pink-4: hsl(334.8, 66.21%, 54.22%);
   --pink-5: hsl(325.73, 61.86%, 44.98%);
   --pink-6: hsl(315.37, 56.79%, 36.49%);
   --pink-7: hsl(304.94, 51.01%, 28.85%);
-  --pink-8: hsl(295.44, 44.60%, 22.19%);
+  --pink-8: hsl(295.44, 44.6%, 22.19%);
   --pink-9: hsl(287.54, 37.61%, 16.69%);
   --pink-10: hsl(281.49, 30.11%, 12.54%);
   --pink-11: hsl(277.31, 22.19%, 9.99%);
   --pink-12: hsl(274.87, 13.92%, 9.04%);
-  
-  --red-1: hsl(8.41, 60.00%, 90.00%);
-  --red-2: hsl(7.84, 62.88%, 82.70%);
-  --red-3: hsl(6.30, 64.20%, 74.28%);
+
+  --red-1: hsl(8.41, 60%, 90%);
+  --red-2: hsl(7.84, 62.88%, 82.7%);
+  --red-3: hsl(6.3, 64.2%, 74.28%);
   --red-4: hsl(4.05, 63.88%, 65.11%);
   --red-5: hsl(1.34, 61.84%, 55.56%);
-  --red-6: hsl(358.42, 58.01%, 46.00%);
+  --red-6: hsl(358.42, 58.01%, 46%);
   --red-7: hsl(355.53, 52.33%, 36.76%);
   --red-8: hsl(352.88, 44.78%, 28.21%);
   --red-9: hsl(350.68, 35.41%, 20.72%);
   --red-10: hsl(349.13, 24.39%, 14.64%);
   --red-11: hsl(348.42, 12.21%, 10.37%);
-  --red-12: hsl(348.72, 0.00%, 8.32%);
-  
-  --green-1: hsl(89.44, 60.00%, 90.00%);
+  --red-12: hsl(348.72, 0%, 8.32%);
+
+  --green-1: hsl(89.44, 60%, 90%);
   --green-2: hsl(105.11, 62.88%, 82.65%);
   --green-3: hsl(118.84, 64.21%, 74.09%);
   --green-4: hsl(130.74, 63.93%, 64.74%);
   --green-5: hsl(140.92, 62.02%, 54.98%);
-  --green-6: hsl(149.50, 58.46%, 45.20%);
-  --green-7: hsl(156.59, 53.30%, 35.77%);
+  --green-6: hsl(149.5, 58.46%, 45.2%);
+  --green-7: hsl(156.59, 53.3%, 35.77%);
   --green-8: hsl(162.32, 46.66%, 27.07%);
-  --green-9: hsl(166.81, 38.83%, 19.50%);
+  --green-9: hsl(166.81, 38.83%, 19.5%);
   --green-10: hsl(170.17, 30.38%, 13.45%);
   --green-11: hsl(172.53, 22.36%, 9.34%);
-  --green-12: hsl(174.00, 16.82%, 7.59%);
+  --green-12: hsl(174, 16.82%, 7.59%);
 
-  --sans: "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI",
-    "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+  --sans:
+    "Source Sans 3", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
     "Helvetica Neue", sans-serif;
-  --mono: "Source Code Pro", source-code-pro, Menlo, Monaco, Consolas,
-    "Courier New", monospace;
-    
+  --mono:
+    "Source Code Pro", source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+
   --radius-sm: 4px;
 }
 
@@ -139,6 +141,70 @@ svg {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 1px;
 }
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--gray-10);
+  padding: 1rem 0;
+  container-type: scroll-state;
+  @container scroll-state(stuck: top) {
+    .sticky-header {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+  }
+}
+.tag {
+  background: var(--gray-8);
+  color: var(--gray-1);
+  padding: 0.2rem 0.6rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease;
+  &:hover {
+    background: var(--gray-7);
+  }
+  &.active {
+    background: var(--pink-6);
+    border-color: var(--pink-5);
+    color: var(--pink-1);
+  }
+}
+.tag-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.75rem 0 1.25rem;
+  .tag-filter-count {
+    margin-left: auto;
+    font-size: 0.7rem;
+    color: var(--gray-3);
+    font-variant-numeric: tabular-nums;
+  }
+}
+.oversampling-control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  .oversampling-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    color: var(--gray-3);
+    margin-right: 0.25rem;
+  }
+}
 .FunctionReference {
   flex: 1 1 auto;
   padding: 1rem 2rem 2rem;
@@ -146,7 +212,24 @@ svg {
   box-shadow: 0 0 0 1px var(--gray-8);
   h2 {
     font-size: 1rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+    margin-left: -0.5rem;
+    .tag {
+      background: var(--gray-8);
+      color: var(--gray-1);
+      padding: 0.1rem 0.5rem;
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 600;
+      border-radius: var(--radius-sm);
+    }
   }
   h3 {
     padding-inline: 0.5rem;
@@ -275,7 +358,9 @@ svg {
   background: var(--gray-11);
   border-radius: var(--radius-sm);
   overflow: scroll;
-  box-shadow: 0 -0.5px 0 0 var(--gray-12), 0 0.5px 0 0 var(--gray-7),
+  box-shadow:
+    0 -0.5px 0 0 var(--gray-12),
+    0 0.5px 0 0 var(--gray-7),
     0 0 0 0.7px var(--gray-9);
 }
 .nested {
@@ -302,11 +387,18 @@ svg {
     grid-template-columns: rem(400) 1fr;
   }
 }
+header {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
 fieldset {
   display: flex;
   align-items: center;
   border: 0;
-  box-shadow: 0 0.5px 0 0 var(--gray-12), 0 -0.5px 0 0 var(--gray-8);
+  box-shadow:
+    0 0.5px 0 0 var(--gray-12),
+    0 -0.5px 0 0 var(--gray-8);
   width: 100%;
   margin: 0;
   height: 2rem;
@@ -451,7 +543,7 @@ fieldset {
     }
   }
 }
-.function-options { 
+.function-options {
   display: flex;
   align-items: center;
   h3 {

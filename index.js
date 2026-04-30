@@ -1,3 +1,6 @@
+// =================================================
+// Utilities
+// =================================================
 /**
  * Helper to prevent x÷0 (example)
  */
@@ -34,13 +37,53 @@ const clamp = (x, min, max) => {
  * Linearly interpolates `input` in [0,1] between `a` and `b`
  */
 const lerp = (input, a, b) => a + (b - a) * input;
+const mix = lerp;
 /**
- * Classic tanh function with a simple drive parameter
+ * Calls function `fn` while producing an output with Y symmetry around 0.
  */
-const tanh = (x, gain = 1) => {
-    const y = Math.tanh(x * gain);
-    return y;
+const mirrorAcrossY = (
+/** input */
+input, 
+/** function to mirror */
+fn, 
+/** args passed to the function */
+...args) => fn(Math.abs(input), ...args);
+/**
+ * Calls function `fn` while producing an output with X and Y symmetry around 0,0.
+ * Effectively turns any saturating function that maps in the range [0,1] into a sigmoid.
+ */
+const mirrorAcrossOrigin = (
+/** input */
+input, 
+/** function to mirror */
+fn, 
+/** args paszsed to the function */
+...args) => {
+    let absOut = fn(Math.abs(input), ...args);
+    return input < 0 ? absOut * -1 : absOut;
 };
+/**
+ * Calls function `fn` reflected across the point at `x`, `y`
+ */
+function inflectionThroughPoint(input, x, y, fn, ...args) {
+    if (input <= x) {
+        return fn(input / (x + epsilon), ...args) * y;
+    }
+    else {
+        return (1 - fn(1 - (input - x) / (1 - x + epsilon), ...args)) * (1 - y) + y;
+        // input scaled to 0 1
+    }
+}
+/**
+ * Reflects a function across the line `x = 0.5`.
+ * Effectively turns ease-out into ease-in (and vice versa).
+ */
+function reflectX(input, fn, ...args) {
+    return 1 - fn(1 - input, ...args);
+}
+// ---------------------------------------------------------------------------
+// Paths
+// ---------------------------------------------------------------------------
 /**
  * @see http://www.flong.com/archive/texts/code/shapers_poly/index.html
  */
@@ -260,7 +303,6 @@ const logistic = (input, gain) => {
  * @see https://www.flong.com/archive/texts/code/shapers_poly/
  */
 const doubleCubicSeat = (input, x, y) => {
-    const epsilon = 0.00001;
     const min_param_a = 0.0 + epsilon;
     const max_param_a = 1.0 - epsilon;
     const min_param_b = 0.0;
@@ -279,7 +321,6 @@ const doubleCubicSeat = (input, x, y) => {
  * @see https://www.flong.com/archive/texts/code/shapers_poly/
  */
 const doubleCubicSeatWithLinearBlend = (input, x, b) => {
-    const epsilon = 0.00001;
     const min_param_a = 0.0 + epsilon;
     const max_param_a = 1.0 - epsilon;
     const min_param_b = 0.0;
@@ -315,6 +356,29 @@ const smoothStep = (input, edge0, edge1) => {
     return input * input * (3 - 2 * input);
 };
 /**
+ * Perlin's smootherstep: `6x⁵ - 15x⁴ + 10x³`.
+ * Continuous first AND second derivatives at the edges.
+ */
+const smootherStep = (input, edge0 = 0, edge1 = 1) => {
+    if (input < edge0)
+        return 0;
+    if (input >= edge1)
+        return 1;
+    const x = (input - edge0) / (edge1 - edge0);
+    return x * x * x * (x * (x * 6 - 15) + 10);
+};
+/**
+ * Perlin's 7th-order smoothest step, with continuous derivatives through 3rd order.
+ */
+const smoothestStep = (input, edge0 = 0, edge1 = 1) => {
+    if (input < edge0)
+        return 0;
+    if (input >= edge1)
+        return 1;
+    const x = (input - edge0) / (edge1 - edge0);
+    return x * x * x * x * (-20 * x * x * x + 70 * x * x - 84 * x + 35);
+};
+/**
  * Hard angle version of smoothStep
  */
 const linearStep = (input, x, y) => {
@@ -331,38 +395,348 @@ const polyline = (input, midpointX, midpointY) => {
         : slopeB * input - slopeB * midpointX + midpointY;
 };
 /**
- * Calls function `fn` while producing an output with Y symmetry around 0.
+ * Catmull–Clark subdivision of an open 4-point control polyline:
+ * `(0,0) → (x1,y1) → (x2,y2) → (1,1)`, refined `subdivisions` times
+ * with the cubic B-spline rules (endpoints pinned).
+ *
+ * For each refinement step:
+ * - Each edge contributes an edge-point  `E = (P_i + P_{i+1}) / 2`
+ * - Each interior vertex is replaced with `V = (P_{i-1} + 6·P_i + P_{i+1}) / 8`
+ *
+ * The input `x` is then sampled against the resulting polyline by linear
+ * interpolation between bracketing vertices. Handles producing a
+ * non-monotonic x will collapse / loop — keep `x1 < x2` for a function.
  */
-const mirrorAcrossY = (
-/** input */
-input, 
-/** function to mirror */
-fn, 
-/** args paszsed to the function */
-...args) => fn(Math.abs(input), ...args);
-/**
- * Calls function `fn` while producing an output with X and Y symmetry around 0,0.
- * Effectively turns any saturating function that maps in the range [0,1] into a sigmoid.
- */
-const mirrorAcrossOrigin = (
-/** input */
-input, 
-/** function to mirror */
-fn, 
-/** args paszsed to the function */
-...args) => {
-    let absOut = fn(Math.abs(input), ...args);
-    return input < 0 ? absOut * -1 : absOut;
+const catmullClark = (input, x1, y1, x2, y2, subdivisions = 3) => {
+    let pts = [
+        [0, 0],
+        [x1, y1],
+        [x2, y2],
+        [1, 1],
+    ];
+    const steps = Math.max(0, Math.floor(subdivisions));
+    for (let s = 0; s < steps; s++) {
+        const next = [pts[0]];
+        for (let i = 0; i < pts.length - 1; i++) {
+            const a = pts[i];
+            const b = pts[i + 1];
+            // edge point
+            next.push([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]);
+            // vertex point for the interior vertex b (skip if b is the last point)
+            if (i + 1 < pts.length - 1) {
+                const c = pts[i + 2];
+                next.push([(a[0] + 6 * b[0] + c[0]) / 8, (a[1] + 6 * b[1] + c[1]) / 8]);
+            }
+        }
+        next.push(pts[pts.length - 1]);
+        pts = next;
+    }
+    if (input <= pts[0][0])
+        return pts[0][1];
+    const last = pts[pts.length - 1];
+    if (input >= last[0])
+        return last[1];
+    for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i];
+        const b = pts[i + 1];
+        if (input >= a[0] && input <= b[0]) {
+            const t = (input - a[0]) / (b[0] - a[0] + epsilon);
+            return lerp(t, a[1], b[1]);
+        }
+    }
+    return last[1];
 };
 /**
- * Calls function `fn` reflected across the point at `x`, `y`
+ * Centripetal Catmull–Rom spline through `(0,0) → (x1,y1) → (x2,y2) → (1,1)`,
+ * sampled by walking the parameter and bracketing on x.
+ *
+ * `alpha` controls the parameterization:
+ *  - `0` → uniform Catmull–Rom (can self-intersect with sharp handles)
+ *  - `0.5` → centripetal (recommended; no cusps/loops)
+ *  - `1` → chordal
+ *
+ * `tension` in [0,1] slackens the curve; `0` is standard Catmull–Rom,
+ * `1` collapses to the control polyline.
+ *
+ * Endpoints are pinned by mirroring the first/last interior segments to
+ * synthesize phantom control points P0 and P5.
  */
-function inflectionThroughPoint(input, x, y, fn, ...args) {
-    if (input <= x) {
-        return fn(input / (x + epsilon), ...args) * y;
+const catmullRom = (input, x1, y1, x2, y2, alpha = 0.5, tension = 0, samples = 64) => {
+    const P1 = [0, 0];
+    const P2 = [x1, y1];
+    const P3 = [x2, y2];
+    const P4 = [1, 1];
+    // phantom endpoints by reflection
+    const P0 = [2 * P1[0] - P2[0], 2 * P1[1] - P2[1]];
+    const P5 = [2 * P4[0] - P3[0], 2 * P4[1] - P3[1]];
+    const ctrl = [P0, P1, P2, P3, P4, P5];
+    const tj = (ti, a, b) => {
+        const dx = b[0] - a[0];
+        const dy = b[1] - a[1];
+        return Math.pow(Math.sqrt(dx * dx + dy * dy) + epsilon, alpha) + ti;
+    };
+    // Build a polyline by sampling each of the 3 interior segments
+    const pts = [];
+    const segs = Math.max(1, Math.floor(samples / 3));
+    for (let s = 0; s < 3; s++) {
+        const p0 = ctrl[s];
+        const p1 = ctrl[s + 1];
+        const p2 = ctrl[s + 2];
+        const p3 = ctrl[s + 3];
+        const t0 = 0;
+        const t1 = tj(t0, p0, p1);
+        const t2 = tj(t1, p1, p2);
+        const t3 = tj(t2, p2, p3);
+        const last = s === 2;
+        const count = last ? segs + 1 : segs;
+        for (let i = 0; i < count; i++) {
+            const u = i / segs;
+            let t = lerp(u, t1, t2);
+            // tension slackens by pulling t toward the segment midpoint
+            const mid = (t1 + t2) / 2;
+            t = lerp(tension, t, mid);
+            const A1x = ((t1 - t) / (t1 - t0)) * p0[0] + ((t - t0) / (t1 - t0)) * p1[0];
+            const A1y = ((t1 - t) / (t1 - t0)) * p0[1] + ((t - t0) / (t1 - t0)) * p1[1];
+            const A2x = ((t2 - t) / (t2 - t1)) * p1[0] + ((t - t1) / (t2 - t1)) * p2[0];
+            const A2y = ((t2 - t) / (t2 - t1)) * p1[1] + ((t - t1) / (t2 - t1)) * p2[1];
+            const A3x = ((t3 - t) / (t3 - t2)) * p2[0] + ((t - t2) / (t3 - t2)) * p3[0];
+            const A3y = ((t3 - t) / (t3 - t2)) * p2[1] + ((t - t2) / (t3 - t2)) * p3[1];
+            const B1x = ((t2 - t) / (t2 - t0)) * A1x + ((t - t0) / (t2 - t0)) * A2x;
+            const B1y = ((t2 - t) / (t2 - t0)) * A1y + ((t - t0) / (t2 - t0)) * A2y;
+            const B2x = ((t3 - t) / (t3 - t1)) * A2x + ((t - t1) / (t3 - t1)) * A3x;
+            const B2y = ((t3 - t) / (t3 - t1)) * A2y + ((t - t1) / (t3 - t1)) * A3y;
+            const Cx = ((t2 - t) / (t2 - t1)) * B1x + ((t - t1) / (t2 - t1)) * B2x;
+            const Cy = ((t2 - t) / (t2 - t1)) * B1y + ((t - t1) / (t2 - t1)) * B2y;
+            pts.push([Cx, Cy]);
+        }
     }
-    else {
-        return (1 - fn(1 - (input - x) / (1 - x + epsilon), ...args)) * (1 - y) + y;
-        // input scaled to 0 1
+    // sample by x
+    if (input <= pts[0][0])
+        return pts[0][1];
+    const last = pts[pts.length - 1];
+    if (input >= last[0])
+        return last[1];
+    for (let i = 0; i < pts.length - 1; i++) {
+        const a = pts[i];
+        const b = pts[i + 1];
+        if ((input >= a[0] && input <= b[0]) || (input <= a[0] && input >= b[0])) {
+            const t = (input - a[0]) / (b[0] - a[0] + epsilon);
+            return lerp(t, a[1], b[1]);
+        }
     }
-}export{biToUni,circularArc,clamp,cubicBezier,cubicSlope,doubleCubicSeat,doubleCubicSeatWithLinearBlend,doubleExponentialSeat,doubleExponentialSigmoid,ease,fold,inflectionThroughPoint,lerp,linearStep,logistic,mirrorAcrossOrigin,mirrorAcrossY,pcurve,polyline,quadraticBezier,quadraticSlope,quadraticThroughAGivenPoint,quantize,remapRange,sineFold,smoothStep,tanh,uniToBi};
+    return last[1];
+};
+// ---------------------------------------------------------------------------
+// DSP / saturation
+// ---------------------------------------------------------------------------
+/**
+ * Cubic soft-clipper: `x - x³/3`, clamped beyond ±1 then renormalized.
+ * Cheap, "analog"-flavored alternative to `tanh`.
+ */
+const softClipCubic = (x, gain = 1) => {
+    const v = clamp(x * gain, -1, 1);
+    // peak of (v - v³/3) at |v|=1 is 2/3, so scale by 3/2
+    return 1.5 * (v - (v * v * v) / 3);
+};
+// ---------------------------------------------------------------------------
+// Sigmoids
+// ---------------------------------------------------------------------------
+/**
+ * Classic tanh function with a simple drive parameter
+ */
+const tanh = (x, gain = 1) => {
+    const y = Math.tanh(x * gain);
+    return y;
+};
+/**
+ * Algebraic sigmoid: `x / sqrt(1 + (x)²)`.
+ * Cheap saturator with no `exp` call. Bipolar in/out.
+ */
+const algebraicSigmoid = (x, gain = 1) => {
+    const drivenX = x * gain;
+    return drivenX / Math.sqrt(1 + drivenX * drivenX);
+};
+/**
+ * Scaled Arctangent sigmoid
+ */
+const arctangentSigmoid = (x, gain = 1) => {
+    return (2 / Math.PI) * Math.atan((Math.PI / 2) * x * gain);
+};
+/**
+ * Softsign function, supposedly faster than `tanh`
+ */
+const softsign = (x, gain = 1) => {
+    const drivenX = x * gain;
+    return drivenX / (1 + Math.abs(drivenX));
+};
+/**
+ * Gudermannian-style saturator, normalized to ±1.
+ * Similar shape to `tanh` with a slightly different rolloff.
+ */
+const gudermannian = (x, gain = 1) => {
+    return (4 / Math.PI) * Math.atan(Math.tanh((x * gain) / 2));
+};
+/**
+ * Reinhard tone-map style saturator: `gx / (1 + |gx|)`. Bipolar in/out.
+ */
+const reinhard = (x, gain = 1) => {
+    const gx = x * gain;
+    return gx / (1 + Math.abs(gx));
+};
+/**
+ * Chebyshev polynomial of the first kind, order 2..5.
+ * Each order excites a specific harmonic when used as a waveshaper.
+ * Input expected in [-1, 1].
+ */
+const chebyshev = (x, order = 2) => {
+    return Math.cos(order * Math.acos(2.0 * clamp(x, 0, 1) - 1.0));
+};
+/**
+ * Half-wave-rectified power shaper: `max(0, x)^exponent`.
+ * Useful for diode-style asymmetric processing.
+ */
+const halfWave = (x, exponent = 1) => x > 0 ? Math.pow(x, Math.max(epsilon, exponent)) : 0;
+// ---------------------------------------------------------------------------
+// Easings / animation
+// ---------------------------------------------------------------------------
+/**
+ * Penner-style elastic ease-out (oscillating overshoot near `input=0`).
+ * Input expected in [0, 1].
+ */
+const easeElastic = (input, amplitude = 1, period = 0.3) => {
+    if (input <= 0)
+        return 0;
+    if (input >= 1)
+        return 1;
+    const a = Math.max(amplitude, 1);
+    const p = Math.max(period, epsilon);
+    const s = (p / (2 * Math.PI)) * Math.asin(1 / a);
+    return (a * Math.pow(2, -10 * input) * Math.sin(((input - s) * (2 * Math.PI)) / p) +
+        1);
+};
+/**
+ * Penner-style bounce ease-out.
+ */
+const easeBounce = (input) => {
+    const n = 7.5625;
+    const d = 2.75;
+    if (input < 1 / d)
+        return n * input * input;
+    if (input < 2 / d) {
+        input -= 1.5 / d;
+        return n * input * input + 0.75;
+    }
+    if (input < 2.5 / d) {
+        input -= 2.25 / d;
+        return n * input * input + 0.9375;
+    }
+    input -= 2.625 / d;
+    return n * input * input + 0.984375;
+};
+/**
+ * Penner-style "back" ease-out: overshoots `1` slightly before settling.
+ */
+const easeBack = (input, overshoot = 1.70158) => {
+    const c1 = overshoot;
+    const c3 = c1 + 1;
+    const x = input - 1;
+    return 1 + c3 * x * x * x + c1 * x * x;
+};
+/**
+ * Exponential ease: `(base^input - 1) / (base - 1)`.
+ * Common in animation libraries.
+ */
+const easeExponential = (input, base = 2) => {
+    const b = Math.max(base, 1 + epsilon);
+    if (input <= 0)
+        return 0;
+    if (input >= 1)
+        return 1;
+    return (Math.pow(b, input) - 1) / (b - 1);
+};
+// ---------------------------------------------------------------------------
+// Bias / gain
+// ---------------------------------------------------------------------------
+/**
+ * Schlick bias: maps [0,1]→[0,1], biases values toward 0 or 1.
+ * `bias = 0.5` is the identity. Lower values pull output toward 0; higher toward 1.
+ */
+const schlick = (input, bias = 0.5) => {
+    const b = clamp(bias, epsilon, 1 - epsilon);
+    return input / ((1 / b - 2) * (1 - input) + 1);
+};
+/**
+ * Logit (inverse of the logistic sigmoid). Bipolar in, bipolar out (clipped).
+ */
+const logit = (input, gain = 1) => {
+    const x = clamp(biToUni(input), epsilon, 1 - epsilon);
+    return Math.log(x / (1 - x)) / Math.max(gain, epsilon);
+};
+// ---------------------------------------------------------------------------
+// Windowing
+// ---------------------------------------------------------------------------
+/**
+ * Gaussian bump centered at `mean` with width `sigma`, peak `1`.
+ */
+const gaussian = (input, mean = 0.5, sigma = 0.15) => {
+    const s = Math.max(sigma, epsilon);
+    const d = (input - mean) / s;
+    return Math.exp(-d * d);
+};
+/**
+ * Hann (raised-cosine) window over [0,1], with peak `1` at `0.5`.
+ */
+const hann = (input, mean = 0.5) => {
+    mean -= 0.5;
+    input = input - mean;
+    if (input <= 0 || input >= 1)
+        return 0;
+    return 0.5 * (1 - Math.cos(2 * Math.PI * input));
+};
+/**
+ * Hyperbolic cosine window: `cosh(x * taper)`, with `x` in [-1,1] and `taper` controlling the curvature.
+ */
+const hyperbolicCosine = (x, taper = 1, mean = 0) => {
+    return 1 / Math.cosh((x - mean) * taper);
+};
+/**
+ * Tukey window: cosine-tapered flat top.
+ * `taper = 0` is rectangular, `taper = 1` is a Hann window.
+ */
+const tukey = (input, taper = 0.5, mean = 0.5) => {
+    mean -= 0.5;
+    input = input - mean;
+    if (input <= 0 || input >= 1)
+        return 0;
+    const a = clamp(taper, 0, 1);
+    if (a === 0)
+        return 1;
+    if (input < a / 2)
+        return 0.5 * (1 + Math.cos(Math.PI * ((2 * input) / a - 1)));
+    if (input > 1 - a / 2)
+        return 0.5 * (1 + Math.cos(Math.PI * ((2 * input) / a - 2 / a + 1)));
+    return 1;
+};
+// ---------------------------------------------------------------------------
+// Periodic
+// ---------------------------------------------------------------------------
+/**
+ * Sawtooth wave with period 1, range [0, 1]. Also a phasor since it's not band-limited.
+ */
+const sawtoothWave = (input, phase = 0) => {
+    return (((input + phase) % 1) + 1) % 1;
+};
+/**
+ * Triangle wave with period 1, range [0, 1].
+ */
+const triangleWave = (input, phase = 0) => {
+    const x = sawtoothWave(input, phase);
+    return 2 * Math.abs(x - 0.5);
+};
+/**
+ * Pulse wave with adjustable duty cycle, range {0, 1}.
+ */
+const pulseWave = (input, duty = 0.5, phase = 0) => {
+    const x = sawtoothWave(input, phase);
+    return x < clamp(duty, 0, 1) ? 1 : 0;
+};export{algebraicSigmoid,arctangentSigmoid,biToUni,catmullClark,catmullRom,chebyshev,circularArc,clamp,cubicBezier,cubicSlope,doubleCubicSeat,doubleCubicSeatWithLinearBlend,doubleExponentialSeat,doubleExponentialSigmoid,ease,easeBack,easeBounce,easeElastic,easeExponential,fold,gaussian,gudermannian,halfWave,hann,hyperbolicCosine,inflectionThroughPoint,lerp,linearStep,logistic,logit,mirrorAcrossOrigin,mirrorAcrossY,mix,pcurve,polyline,pulseWave,quadraticBezier,quadraticSlope,quadraticThroughAGivenPoint,quantize,reflectX,reinhard,remapRange,sawtoothWave,schlick,sineFold,smoothStep,smootherStep,smoothestStep,softClipCubic,softsign,tanh,triangleWave,tukey,uniToBi};
