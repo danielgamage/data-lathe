@@ -6,8 +6,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "repository": {
-    "type": "git",
-    "url": "git+https://github.com/danielgamage/data-lathe.git"
+    "url": "https://github.com/danielgamage/data-lathe"
   },
   "homepage": "https://github.com/danielgamage/data-lathe#readme",
   "bugs": {
