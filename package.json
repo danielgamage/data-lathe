@@ -1,10 +1,18 @@
 {
   "name": "data-lathe",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "A utility library for transforming and reshaping normalized data",
   "type": "module",
   "main": "./index.js",
   "types": "./index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danielgamage/data-lathe.git"
+  },
+  "homepage": "https://github.com/danielgamage/data-lathe#readme",
+  "bugs": {
+    "url": "https://github.com/danielgamage/data-lathe/issues"
+  },
   "exports": {
     ".": "./index.js"
   },
