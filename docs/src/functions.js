@@ -416,7 +416,7 @@ export const functions = [
       { name: "mean", default: 0.5, min: 0, max: 1 },
     ],
     x: "mean",
-    tags: ["dsp"],
+    tags: ["window", "dsp"],
   },
 
   // ---------- Periodic ----------
