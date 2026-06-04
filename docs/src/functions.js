@@ -322,6 +322,13 @@ export const functions = [
 
   // ---------- Easings ----------
   {
+    name: "cosineEaseInOut",
+    fn: lathe.cosineEaseInOut,
+    features: { mirrorXY: true },
+    params: [],
+    tags: ["easing", "curve"],
+  },
+  {
     name: "easeElastic",
     fn: lathe.easeElastic,
     features: { mirrorXY: true },

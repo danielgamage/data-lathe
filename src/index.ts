@@ -748,6 +748,13 @@ export const halfWave = (x: number, exponent: number = 1) =>
 // ---------------------------------------------------------------------------
 
 /**
+ * Cosine ease-in-out on the closed unit interval [0, 1].
+ * `(1 - cos(π·input)) / 2` — smooth S-curve with zero slope at the endpoints.
+ */
+export const cosineEaseInOut = (input: number) =>
+  (1 - Math.cos(Math.PI * input)) / 2
+
+/**
  * Penner-style elastic ease-out (oscillating overshoot near `input=0`).
  * Input expected in [0, 1].
  */

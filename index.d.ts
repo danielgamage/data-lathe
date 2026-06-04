@@ -46,10 +46,6 @@ export declare const quadraticThroughAGivenPoint: (input: number, x: number, y: 
  */
 export declare const ease: (input: number, order?: number) => number;
 /**
- * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
- */
-export declare const quadraticBezier: (input: number, x: number, y: number) => number;
-/**
  * Implements quadratic bezier curve with a simplified `bias` argument that
  * weights values towards 0 or 1.
  */
@@ -63,10 +59,6 @@ export declare const doubleExponentialSigmoid: (x: number, a: number) => number;
  */
 export declare const doubleExponentialSeat: (input: number, a: number) => number;
 export declare const cubicSlope: (input: number, bias: number, tension?: number) => number;
-/**
- * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
- */
-export declare const cubicBezier: (x: number, x1: number, y1: number, x2: number, y2: number) => number;
 /**
  * Snaps values to nearest multiple of `step`
  */
@@ -119,6 +111,14 @@ export declare const linearStep: (input: number, x: number, y: number) => number
  */
 export declare const polyline: (input: number, midpointX: number, midpointY: number) => number;
 /**
+ * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
+ */
+export declare const quadraticBezier: (input: number, x: number, y: number) => number;
+/**
+ * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
+ */
+export declare const cubicBezier: (x: number, x1: number, y1: number, x2: number, y2: number) => number;
+/**
  * Catmull–Clark subdivision of an open 4-point control polyline:
  * `(0,0) → (x1,y1) → (x2,y2) → (1,1)`, refined `subdivisions` times
  * with the cubic B-spline rules (endpoints pinned).
@@ -156,7 +156,7 @@ export declare const softClipCubic: (x: number, gain?: number) => number;
 /**
  * Classic tanh function with a simple drive parameter
  */
-export declare const tanh: (x: any, gain?: number) => number;
+export declare const tanh: (x: number, gain?: number) => number;
 /**
  * Algebraic sigmoid: `x / sqrt(1 + (x)²)`.
  * Cheap saturator with no `exp` call. Bipolar in/out.
@@ -191,6 +191,11 @@ export declare const chebyshev: (x: number, order?: number) => number;
  */
 export declare const halfWave: (x: number, exponent?: number) => number;
 /**
+ * Cosine ease-in-out on the closed unit interval [0, 1].
+ * `(1 - cos(π·input)) / 2` — smooth S-curve with zero slope at the endpoints.
+ */
+export declare const cosineEaseInOut: (input: number) => number;
+/**
  * Penner-style elastic ease-out (oscillating overshoot near `input=0`).
  * Input expected in [0, 1].
  */
@@ -209,7 +214,7 @@ export declare const easeBack: (input: number, overshoot?: number) => number;
  */
 export declare const easeExponential: (input: number, base?: number) => number;
 /**
- * Schlick bias: maps [0,1]→[0,1], biases values toward 0 or 1.
+ * Schlick: maps [0,1]→[0,1], biases values toward 0 or 1.
  * `bias = 0.5` is the identity. Lower values pull output toward 0; higher toward 1.
  */
 export declare const schlick: (input: number, bias?: number) => number;

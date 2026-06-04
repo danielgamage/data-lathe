@@ -1,6 +1,6 @@
-// =================================================
+// ---------------------------------------------------------------------------
 // Utilities
-// =================================================
+// ---------------------------------------------------------------------------
 /**
  * Helper to prevent x÷0 (example)
  */
@@ -122,29 +122,6 @@ order = 2) => {
     return offset - (positiveBias ? 1 : -1) * Math.pow(input, order);
 };
 /**
- * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
- */
-const quadraticBezier = (input, x, y) => {
-    // adapted from BEZMATH.PS (1993)
-    // by Don Lancaster, SYNERGETICS Inc.
-    // http://www.tinaja.com/text/bezmath.html
-    if (x === 0.5) {
-        return input;
-    }
-    let a = { x, y };
-    a.x = clamp(a.x, 0.0, 1.0);
-    a.y = clamp(a.y, 0.0, 1.0);
-    if (a.x === 0.5) {
-        a.x = a.x + epsilon;
-        a.y = a.y + epsilon;
-    }
-    // solve t from x (an inverse operation)
-    let om2a = 1.0 - 2.0 * a.x;
-    let t = (Math.sqrt(a.x * a.x + om2a * input) - a.x) / om2a;
-    let output = (1.0 - 2.0 * a.y) * (t * t) + 2.0 * a.y * t;
-    return output;
-};
-/**
  * Implements quadratic bezier curve with a simplified `bias` argument that
  * weights values towards 0 or 1.
  */
@@ -200,52 +177,6 @@ tension = 0.5) => {
     // Calculate pointB as the mirrored point of pointA
     const pointB = [1 - pointA[1], 1 - pointA[0]];
     return cubicBezier(input, pointA[0], pointA[1], pointB[0], pointB[1]);
-};
-/**
- * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
- */
-const cubicBezier = (x, x1, y1, x2, y2) => {
-    // Helper functions:
-    const slopeFromT = (t, A, B, C) => {
-        const dtdx = 1.0 / (3.0 * A * t * t + 2.0 * B * t + C);
-        return dtdx;
-    };
-    const xFromT = (t, A, B, C, D) => {
-        const x = A * (t * t * t) + B * (t * t) + C * t + D;
-        return x;
-    };
-    const yFromT = (t, E, F, G, H) => {
-        const y = E * (t * t * t) + F * (t * t) + G * t + H;
-        return y;
-    };
-    const y0a = 0.0; // initial y
-    const x0a = 0.0; // initial x
-    const y1a = y1; // 1st influence y
-    const x1a = x1; // 1st influence x
-    const y2a = y2; // 2nd influence y
-    const x2a = x2; // 2nd influence x
-    const y3a = 1.0; // final y
-    const x3a = 1.0; // final x
-    const A = x3a - 3 * x2a + 3 * x1a - x0a;
-    const B = 3 * x2a - 6 * x1a + 3 * x0a;
-    const C = 3 * x1a - 3 * x0a;
-    const D = x0a;
-    const E = y3a - 3 * y2a + 3 * y1a - y0a;
-    const F = 3 * y2a - 6 * y1a + 3 * y0a;
-    const G = 3 * y1a - 3 * y0a;
-    const H = y0a;
-    // Solve for t given x (using Newton-Raphelson), then solve for y given t.
-    // Assume for the first guess that t = x.
-    let currentT = x;
-    const nRefinementIterations = 5;
-    for (let i = 0; i < nRefinementIterations; i++) {
-        const currentX = xFromT(currentT, A, B, C, D);
-        const currentSlope = slopeFromT(currentT, A, B, C);
-        currentT -= (currentX - x) * currentSlope;
-        currentT = clamp(currentT, 0, 1);
-    }
-    const y = yFromT(currentT, E, F, G, H);
-    return y;
 };
 /**
  * Snaps values to nearest multiple of `step`
@@ -384,6 +315,9 @@ const smoothestStep = (input, edge0 = 0, edge1 = 1) => {
 const linearStep = (input, x, y) => {
     return clamp((input - x) / (y - x), 0, 1);
 };
+// ---------------------------------------------------------------------------
+// Curves
+// ---------------------------------------------------------------------------
 /**
  * 3-point polyline
  */
@@ -393,6 +327,75 @@ const polyline = (input, midpointX, midpointY) => {
     return input < midpointX
         ? slopeA * input
         : slopeB * input - slopeB * midpointX + midpointY;
+};
+/**
+ * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
+ */
+const quadraticBezier = (input, x, y) => {
+    // adapted from BEZMATH.PS (1993)
+    // by Don Lancaster, SYNERGETICS Inc.
+    // http://www.tinaja.com/text/bezmath.html
+    if (x === 0.5) {
+        return input;
+    }
+    let a = { x, y };
+    a.x = clamp(a.x, 0.0, 1.0);
+    a.y = clamp(a.y, 0.0, 1.0);
+    if (a.x === 0.5) {
+        a.x = a.x + epsilon;
+        a.y = a.y + epsilon;
+    }
+    // solve t from x (an inverse operation)
+    let om2a = 1.0 - 2.0 * a.x;
+    let t = (Math.sqrt(a.x * a.x + om2a * input) - a.x) / om2a;
+    let output = (1.0 - 2.0 * a.y) * (t * t) + 2.0 * a.y * t;
+    return output;
+};
+/**
+ * @see http://www.flong.com/archive/texts/code/shapers_bez/index.html
+ */
+const cubicBezier = (x, x1, y1, x2, y2) => {
+    // Helper functions:
+    const slopeFromT = (t, A, B, C) => {
+        const dtdx = 1.0 / (3.0 * A * t * t + 2.0 * B * t + C);
+        return dtdx;
+    };
+    const xFromT = (t, A, B, C, D) => {
+        const x = A * (t * t * t) + B * (t * t) + C * t + D;
+        return x;
+    };
+    const yFromT = (t, E, F, G, H) => {
+        const y = E * (t * t * t) + F * (t * t) + G * t + H;
+        return y;
+    };
+    const y0a = 0.0; // initial y
+    const x0a = 0.0; // initial x
+    const y1a = y1; // 1st influence y
+    const x1a = x1; // 1st influence x
+    const y2a = y2; // 2nd influence y
+    const x2a = x2; // 2nd influence x
+    const y3a = 1.0; // final y
+    const x3a = 1.0; // final x
+    const A = x3a - 3 * x2a + 3 * x1a - x0a;
+    const B = 3 * x2a - 6 * x1a + 3 * x0a;
+    const C = 3 * x1a - 3 * x0a;
+    const D = x0a;
+    const E = y3a - 3 * y2a + 3 * y1a - y0a;
+    const F = 3 * y2a - 6 * y1a + 3 * y0a;
+    const G = 3 * y1a - 3 * y0a;
+    const H = y0a;
+    // Solve for t given x (using Newton-Raphelson), then solve for y given t.
+    // Assume for the first guess that t = x.
+    let currentT = x;
+    const nRefinementIterations = 5;
+    for (let i = 0; i < nRefinementIterations; i++) {
+        const currentX = xFromT(currentT, A, B, C, D);
+        const currentSlope = slopeFromT(currentT, A, B, C);
+        currentT -= (currentX - x) * currentSlope;
+        currentT = clamp(currentT, 0, 1);
+    }
+    const y = yFromT(currentT, E, F, G, H);
+    return y;
 };
 /**
  * Catmull–Clark subdivision of an open 4-point control polyline:
@@ -600,6 +603,11 @@ const halfWave = (x, exponent = 1) => x > 0 ? Math.pow(x, Math.max(epsilon, expo
 // Easings / animation
 // ---------------------------------------------------------------------------
 /**
+ * Cosine ease-in-out on the closed unit interval [0, 1].
+ * `(1 - cos(π·input)) / 2` — smooth S-curve with zero slope at the endpoints.
+ */
+const cosineEaseInOut = (input) => (1 - Math.cos(Math.PI * input)) / 2;
+/**
  * Penner-style elastic ease-out (oscillating overshoot near `input=0`).
  * Input expected in [0, 1].
  */
@@ -658,7 +666,7 @@ const easeExponential = (input, base = 2) => {
 // Bias / gain
 // ---------------------------------------------------------------------------
 /**
- * Schlick bias: maps [0,1]→[0,1], biases values toward 0 or 1.
+ * Schlick: maps [0,1]→[0,1], biases values toward 0 or 1.
  * `bias = 0.5` is the identity. Lower values pull output toward 0; higher toward 1.
  */
 const schlick = (input, bias = 0.5) => {
@@ -739,4 +747,4 @@ const triangleWave = (input, phase = 0) => {
 const pulseWave = (input, duty = 0.5, phase = 0) => {
     const x = sawtoothWave(input, phase);
     return x < clamp(duty, 0, 1) ? 1 : 0;
-};export{algebraicSigmoid,arctangentSigmoid,biToUni,catmullClark,catmullRom,chebyshev,circularArc,clamp,cubicBezier,cubicSlope,doubleCubicSeat,doubleCubicSeatWithLinearBlend,doubleExponentialSeat,doubleExponentialSigmoid,ease,easeBack,easeBounce,easeElastic,easeExponential,fold,gaussian,gudermannian,halfWave,hann,hyperbolicCosine,inflectionThroughPoint,lerp,linearStep,logistic,logit,mirrorAcrossOrigin,mirrorAcrossY,mix,pcurve,polyline,pulseWave,quadraticBezier,quadraticSlope,quadraticThroughAGivenPoint,quantize,reflectX,reinhard,remapRange,sawtoothWave,schlick,sineFold,smoothStep,smootherStep,smoothestStep,softClipCubic,softsign,tanh,triangleWave,tukey,uniToBi};
+};export{algebraicSigmoid,arctangentSigmoid,biToUni,catmullClark,catmullRom,chebyshev,circularArc,clamp,cosineEaseInOut,cubicBezier,cubicSlope,doubleCubicSeat,doubleCubicSeatWithLinearBlend,doubleExponentialSeat,doubleExponentialSigmoid,ease,easeBack,easeBounce,easeElastic,easeExponential,fold,gaussian,gudermannian,halfWave,hann,hyperbolicCosine,inflectionThroughPoint,lerp,linearStep,logistic,logit,mirrorAcrossOrigin,mirrorAcrossY,mix,pcurve,polyline,pulseWave,quadraticBezier,quadraticSlope,quadraticThroughAGivenPoint,quantize,reflectX,reinhard,remapRange,sawtoothWave,schlick,sineFold,smoothStep,smootherStep,smoothestStep,softClipCubic,softsign,tanh,triangleWave,tukey,uniToBi};
