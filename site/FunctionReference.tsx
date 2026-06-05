@@ -6,7 +6,7 @@ import {
   mirrorAcrossOrigin,
   inflectionThroughPoint,
   clamp
-} from "data-lathe"
+} from "../src/index.ts"
 import { useDrag } from "@use-gesture/react"
 import { IconToggle } from "./IconToggle"
 import { Range } from "./Range"

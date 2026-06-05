@@ -8,10 +8,9 @@ Use this as a PR checklist:
 
 - [ ] Implement the function in [`src/index.ts`](src/index.ts) with a JSDoc comment (description, parameter meaning, and `@see` links where applicable).
 - [ ] Run `npm run build` so [`index.js`](index.js) and [`index.d.ts`](index.d.ts) are regenerated from TypeScript (do not hand-edit these files).
-- [ ] Register the function in [`docs/src/functions.js`](docs/src/functions.js) (name, `fn`, `params`, `tags`, and optional `features` / `x` / `y`).
-- [ ] Run `npm run copy-docs` so the docs app picks up the built package (or run `npm run build` from the repo root, then copy `index.js` and `index.d.ts` into `docs/node_modules/data-lathe/` as that script does).
+- [ ] Register the function in [`site/functions.js`](site/functions.js) (name, `fn`, `params`, `tags`, and optional `features` / `x` / `y`).
 - [ ] Add or extend tests in [`src/index.spec.js`](src/index.spec.js) when behavior is non-obvious or easy to regress.
-- [ ] Verify the function in the docs dev server (`cd docs && npm run dev`).
+- [ ] Verify the function in the docs dev server (`npm run dev` from the repo root).
 
 ## Implementation (`src/index.ts`)
 
@@ -42,14 +41,15 @@ Rollup + `declaration: true` in [`tsconfig.json`](tsconfig.json) emits declarati
 From the repository root:
 
 ```bash
-npm run build      # compiles src/index.ts → index.js + index.d.ts
+npm run build      # compiles src/index.ts → index.js + index.d.ts (for tests and npm publish)
 npm run test:ci    # run tests once
-npm run copy-docs  # rebuild and refresh docs/node_modules/data-lathe
+npm run dev        # interactive docs site (imports src/index.ts directly)
+npm run build:site # production build of the docs site → dist/
 ```
 
 **Do not edit `index.js` or `index.d.ts` by hand** — they are build outputs and are what consumers import (`package.json` points `"main"` and `"types"` at them).
 
-## Documentation site (`docs/src/functions.js`)
+## Documentation site (`site/functions.js`)
 
 Each entry in the `functions` array drives one card on the [function reference](https://lathe-rust.vercel.app/) UI.
 
@@ -122,7 +122,7 @@ The reference UI also supports **Multi step** (`inflectionThroughPoint`) for any
 
 ### Tags
 
-Tags power the filter bar in [`docs/src/App.tsx`](docs/src/App.tsx). Reuse existing tags when they fit; introduce a new tag only when it helps discovery.
+Tags power the filter bar in [`site/App.tsx`](site/App.tsx). Reuse existing tags when they fit; introduce a new tag only when it helps discovery.
 
 Common tags in use:
 

@@ -3,7 +3,7 @@ import typescript from "@rollup/plugin-typescript"
 const config = {
   plugins: [
     typescript({
-      exclude: ["docs/**/*", "node_modules/**/*", "test/**/*"],
+      exclude: ["site/**/*", "node_modules/**/*", "test/**/*"],
     }),
   ],
   input: "src/index.ts",

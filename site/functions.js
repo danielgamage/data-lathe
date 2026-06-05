@@ -1,4 +1,4 @@
-import * as lathe from "data-lathe"
+import * as lathe from "../src/index.ts"
 
 export const functions = [
   {

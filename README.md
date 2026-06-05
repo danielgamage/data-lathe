@@ -13,3 +13,7 @@ npm i data-lathe
 ## Usage
 
 Try out the minimal example on [Observable](https://observablehq.com/@danielgamage/data-lathe), and check the docs on [the docs site](https://lathe-rust.vercel.app/)
+
+### Developing the docs site
+
+From the repository root: `npm install`, then `npm run dev`. The site in [`site/`](site/) imports the library from [`src/index.ts`](src/index.ts) (no rebuild or publish step while iterating).
