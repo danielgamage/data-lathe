@@ -1,12 +1,15 @@
 {
   "include": ["src/**/*.ts"],
-  "exclude": ["dist"],
+  "exclude": ["dist", "site"],
   "compilerOptions": {
     "esModuleInterop": true,
     "rootDir": "src",
     "target": "ESNext",
     "module": "ESNext",
+    "moduleResolution": "bundler",
     "declaration": true,
-    "declarationDir": "./"
+    "declarationDir": "./",
+    "skipLibCheck": true,
+    "isolatedModules": true
   }
 }

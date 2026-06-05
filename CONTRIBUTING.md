@@ -34,14 +34,15 @@ Public APIs should have a short summary. Link to papers or reference implementat
 export const myCurve = (input: number, bias: number = 0.5) => { ... }
 ```
 
-Rollup + `declaration: true` in [`tsconfig.json`](tsconfig.json) emits declarations into `index.d.ts` from these comments.
+Vite library mode emits `index.js`; `tsc --emitDeclarationOnly` emits `index.d.ts` from JSDoc via [`tsconfig.json`](tsconfig.json).
 
 ## Build and published artifacts
 
 From the repository root:
 
 ```bash
-npm run build      # compiles src/index.ts → index.js + index.d.ts (for tests and npm publish)
+npm run build      # compiles src/index.ts → index.js + index.d.ts via Vite (for tests and npm publish)
+npm run build:compare  # after changing the build, compare against .build-baseline/ for functional equivalence
 npm run test:ci    # run tests once
 npm run dev        # interactive docs site (imports src/index.ts directly)
 npm run build:site # production build of the docs site → dist/

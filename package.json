@@ -1,6 +1,6 @@
 {
   "name": "data-lathe",
-  "version": "0.7.3",
+  "version": "0.8.0",
   "description": "A utility library for transforming and reshaping normalized data",
   "type": "module",
   "main": "./index.js",
@@ -16,7 +16,8 @@
     ".": "./index.js"
   },
   "scripts": {
-    "build": "rm -rf dist/* && rollup --config",
+    "build": "vite build --mode lib && tsc -p tsconfig.json --emitDeclarationOnly",
+    "build:compare": "node scripts/compare-build.mjs",
     "dev": "vite",
     "build:site": "vite build",
     "build:check:site": "tsc -p tsconfig.site.json && tsc -p tsconfig.node.json && vite build",
@@ -28,7 +29,6 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@observablehq/plot": "^0.6.17",
-    "@rollup/plugin-typescript": "^9.0.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@use-gesture/react": "^10.3.1",
@@ -46,10 +46,8 @@
     "react-inlinesvg": "^4.3.0",
     "react-spring": "^10.0.3",
     "react-use-measure": "^2.1.7",
-    "rollup": "^3.0.0",
-    "rollup-plugin-typescript2": "^0.34.1",
     "sass": "^1.99.0",
-    "typescript": "^4.8.4",
+    "typescript": "~5.8.3",
     "typescript-eslint": "^8.59.1",
     "usehooks-ts": "^3.1.1",
     "vite": "^6.3.5",
