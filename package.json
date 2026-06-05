@@ -32,7 +32,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@use-gesture/react": "^10.3.1",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
     "classnames": "^2.5.1",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -47,10 +47,10 @@
     "react-spring": "^10.0.3",
     "react-use-measure": "^2.1.7",
     "sass": "^1.99.0",
-    "typescript": "~5.8.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.1",
     "usehooks-ts": "^3.1.1",
-    "vite": "^6.3.5",
-    "vitest": "^3.2.4"
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   }
 }
