@@ -1,4 +1,4 @@
-import * as lathe from "data-lathe"
+import * as lathe from "../src/index.ts"
 
 export const functions = [
   {
@@ -321,6 +321,13 @@ export const functions = [
   },
 
   // ---------- Easings ----------
+  {
+    name: "cosineEaseInOut",
+    fn: lathe.cosineEaseInOut,
+    features: { mirrorXY: true },
+    params: [],
+    tags: ["easing", "curve"],
+  },
   {
     name: "easeElastic",
     fn: lathe.easeElastic,

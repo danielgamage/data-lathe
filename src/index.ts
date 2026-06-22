@@ -59,9 +59,9 @@ export const mirrorAcrossY = (
   /** input */
   input: number,
   /** function to mirror */
-  fn,
+  fn: (value: number, ...fnArgs: number[]) => number,
   /** args passed to the function */
-  ...args
+  ...args: number[]
 ) => fn(Math.abs(input), ...args)
 
 /**
@@ -72,9 +72,9 @@ export const mirrorAcrossOrigin = (
   /** input */
   input: number,
   /** function to mirror */
-  fn,
-  /** args paszsed to the function */
-  ...args
+  fn: (value: number, ...fnArgs: number[]) => number,
+  /** args passed to the function */
+  ...args: number[]
 ) => {
   let absOut = fn(Math.abs(input), ...args)
   return input < 0 ? absOut * -1 : absOut
@@ -83,9 +83,9 @@ export const mirrorAcrossOrigin = (
  * Calls function `fn` reflected across the point at `x`, `y`
  */
 export function inflectionThroughPoint<Fn extends (...args: any[]) => number>(
-  input,
-  x,
-  y,
+  input: number,
+  x: number,
+  y: number,
   fn: Fn,
   ...args: Omit<Parameters<Fn>, "input">
 ) {
@@ -746,6 +746,13 @@ export const halfWave = (x: number, exponent: number = 1) =>
 // ---------------------------------------------------------------------------
 // Easings / animation
 // ---------------------------------------------------------------------------
+
+/**
+ * Cosine ease-in-out on the closed unit interval [0, 1].
+ * `(1 - cos(π·input)) / 2` — smooth S-curve with zero slope at the endpoints.
+ */
+export const cosineEaseInOut = (input: number) =>
+  (1 - Math.cos(Math.PI * input)) / 2
 
 /**
  * Penner-style elastic ease-out (oscillating overshoot near `input=0`).

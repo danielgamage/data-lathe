@@ -6,7 +6,7 @@ import {
   mirrorAcrossOrigin,
   inflectionThroughPoint,
   clamp
-} from "data-lathe"
+} from "../src/index.ts"
 import { useDrag } from "@use-gesture/react"
 import { IconToggle } from "./IconToggle"
 import { Range } from "./Range"
@@ -145,6 +145,13 @@ export const FunctionReference = ({ fn, oversampling = 1, extendedRange = false 
           y: "output",
           className: dataLineClass,
         }),
+        Plot.tip(data, Plot.pointerX({
+            frameAnchor: "top",
+            anchor: "top",
+            x: "input",
+            y: "output",
+            text: (d) => `${d.input.toFixed(2)}`,
+        })),
       ],
     })
 

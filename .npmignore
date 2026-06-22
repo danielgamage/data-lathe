@@ -1,7 +1,14 @@
-docs/
+site/
+public/
+index.html
+vite.config.ts
+vercel.json
+eslint.config.js
+scripts/
+tsconfig.site.json
+tsconfig.node.json
 .github/
 src/
 .babelrc
 .prettierrc
-rollup.config.js
 tsconfig.json

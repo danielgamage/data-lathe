@@ -42,6 +42,12 @@ describe('data-lathe core functions', () => {
     expect(lathe.ease(0.5, 0)).toBeCloseTo(0.5);
   });
 
+  test('cosineEaseInOut maps endpoints and midpoint', () => {
+    expect(lathe.cosineEaseInOut(0)).toBeCloseTo(0);
+    expect(lathe.cosineEaseInOut(1)).toBeCloseTo(1);
+    expect(lathe.cosineEaseInOut(0.5)).toBeCloseTo(0.5);
+  });
+
   test('quadraticBezier returns input for x=0.5', () => {
     expect(lathe.quadraticBezier(0.3, 0.5, 0.5)).toBeCloseTo(0.3);
   });

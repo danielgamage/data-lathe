@@ -289,6 +289,9 @@ svg {
   gap: 0.5rem;
   margin-block: 0.5rem;
 }
+[class^="plot-"] {
+  --plot-background: var(--gray-10);
+}
 .IconToggle {
   flex: 0 0 auto;
   display: flex;
