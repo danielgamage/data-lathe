@@ -145,6 +145,13 @@ export const FunctionReference = ({ fn, oversampling = 1, extendedRange = false 
           y: "output",
           className: dataLineClass,
         }),
+        Plot.tip(data, Plot.pointerX({
+            frameAnchor: "top",
+            anchor: "top",
+            x: "input",
+            y: "output",
+            text: (d) => `${d.input.toFixed(2)}`,
+        })),
       ],
     })
 
